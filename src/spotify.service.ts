@@ -3,12 +3,18 @@ import { from, map, mergeMap, tap } from 'rxjs'
 export class Spotify {
   private url = 'https://api.spotify.com/v1/'
   private access_token?: string
-  private client_id: string
-  private client_secret: string
+  private userSession: {
+    client_id: string
+    client_secret: string
+    access_token?: string
+    expiry?: number
+  }
 
   constructor() {
-    this.client_id = window.localStorage.getItem('clientID') ?? ''
-    this.client_secret = window.localStorage.getItem('clientSecret') ?? ''
+    this.userSession = {
+      client_id: window.localStorage.getItem('clientID') ?? '',
+      client_secret: window.localStorage.getItem('clientSecret') ?? ''
+    }
   }
 
   login(id: string, secret: string) {
@@ -24,7 +30,7 @@ export class Spotify {
     }).pipe(
       tap((response) => {
         this.access_token = response.access_token
-        console.log(response)
+        this.expiry = response.expires_in
       })
     )
   }
@@ -53,25 +59,33 @@ export class Spotify {
   }
 
   set clientID(id: string) {
-    this.client_id = id
+    this.userSession.client_id = id
     window.localStorage.setItem('clientID', id)
   }
 
   set clientSecret(secret: string) {
-    this.client_secret = secret
+    this.userSession.client_secret = secret
     window.localStorage.setItem('clientSecret', secret)
   }
 
+  set expiry(expires_in: number) {
+    this.userSession.expiry = Date.now() + expires_in
+  }
+
   get clientID() {
-    return this.client_id
+    return this.userSession.client_id
   }
 
   get clientSecret() {
-    return this.client_secret
+    return this.userSession.client_secret
   }
 
   get isLoggedIn() {
-    return !!this.access_token
+    return (
+      !!this.userSession.access_token &&
+      !!this.userSession.expiry &&
+      this.userSession.expiry < Date.now()
+    )
   }
 }
 
