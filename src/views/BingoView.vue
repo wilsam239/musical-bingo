@@ -1,15 +1,25 @@
+<script setup lang="ts">
+import { BingoService } from '@/bingo.service';
+import { onMounted } from 'vue';
+
+const iterations:number[] = []
+const bingo = BingoService
+onMounted(() => {
+  for(let i = 0; i < 25; i++) {
+    iterations.push(i)
+  }
+  console.log(iterations)
+})
+</script>
+
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
-  </div>
+  <p v-for="i in iterations" :key="i">
+  {{ bingo.shuffle }}
+  </p>
 </template>
 
+
+
 <style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
+
 </style>
