@@ -2,7 +2,6 @@ import { from, map, mergeMap, tap } from 'rxjs'
 
 export class Spotify {
   private url = 'https://api.spotify.com/v1/'
-  private access_token?: string
   private userSession: {
     client_id: string
     client_secret: string
@@ -11,10 +10,13 @@ export class Spotify {
   }
 
   constructor() {
-    this.userSession = {
-      client_id: window.localStorage.getItem('clientID') ?? '',
-      client_secret: window.localStorage.getItem('clientSecret') ?? ''
-    }
+    this.userSession = JSON.parse(
+      localStorage.getItem('userSession') ??
+        JSON.stringify({
+          client_id: '',
+          client_secret: ''
+        })
+    )
   }
 
   login(id: string, secret: string) {
@@ -60,16 +62,22 @@ export class Spotify {
 
   set clientID(id: string) {
     this.userSession.client_id = id
-    window.localStorage.setItem('clientID', id)
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
   set clientSecret(secret: string) {
     this.userSession.client_secret = secret
-    window.localStorage.setItem('clientSecret', secret)
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
   set expiry(expires_in: number) {
     this.userSession.expiry = Date.now() + expires_in
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
+  }
+
+  set access_token(at: string) {
+    this.userSession.access_token = at
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
   get clientID() {
@@ -84,7 +92,7 @@ export class Spotify {
     return (
       !!this.userSession.access_token &&
       !!this.userSession.expiry &&
-      this.userSession.expiry < Date.now()
+      this.userSession.expiry > Date.now()
     )
   }
 }

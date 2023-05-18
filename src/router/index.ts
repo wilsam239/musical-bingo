@@ -1,8 +1,6 @@
 import { SpotifyService } from '@/spotify.service'
 import { createRouter, createWebHistory } from 'vue-router'
 import BingoView from '../views/BingoView.vue'
-import GetPlaylistView from '../views/GetPlaylistView.vue'
-import LoginView from '../views/LoginView.vue'
 
 const spotify = SpotifyService
 const router = createRouter({
@@ -11,12 +9,12 @@ const router = createRouter({
     {
       path: '/',
       name: 'login',
-      component: LoginView
+      component: () => import('../components/LoginForm.vue')
     },
     {
-      path: '/playlist',
-      name: 'playlist',
-      component: GetPlaylistView
+      path: '/config',
+      name: 'config',
+      component: () => import('../components/BingoConfig.vue')
     },
     {
       path: '/bingo',

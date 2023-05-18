@@ -10,6 +10,7 @@ onMounted(() => {
   }
   console.log(iterations)
 })
+
 </script>
 
 <template>

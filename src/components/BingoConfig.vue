@@ -24,11 +24,11 @@ function fetch() {
 
   const id = extractPlaylistId(playlistURL.value)
 
-  if(id) {
-  ss.fetchPlaylist(id).subscribe((songs) => {
-    bs.populate(songs);
-    router.push('/bingo')
-  })
+  if (id) {
+    ss.fetchPlaylist(id).subscribe((songs) => {
+      bs.populate(songs);
+      router.push('/bingo')
+    })
   } else {
     console.error('Yeah nah, no id ')
   }
@@ -37,9 +37,7 @@ function fetch() {
 </script>
 
 <template>
-    <div class="config-pages">
-  <div class="login-box">
-    <h2>Playlist Info</h2>
+  <h2>Bingo Config</h2>
     <form>
       <div class="user-box">
         <input type="text" name="" v-model="playlistURL" required>
@@ -57,9 +55,4 @@ function fetch() {
         Generate Bingo!
       </a>
     </form>
-  </div>
-  </div>
 </template>
-
-<style>
-</style>
