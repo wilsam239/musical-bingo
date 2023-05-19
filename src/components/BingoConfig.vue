@@ -59,10 +59,13 @@ function fetch() {
           <input type="text" name="" v-model="playlistURL" required />
           <label>Playlit URL</label>
         </div>
-
         <div class="user-box">
           <input type="text" name="" v-model="bs.subtitle" required />
           <label>Subtitle (eg: Sponsor, theme)</label>
+        </div>
+        <div class="user-box">
+          <input type="text" name="" v-model="bs.numberOfSheets" required />
+          <label>Number Of Sheets</label>
         </div>
         <div class="user-box">
           <input type="text" name="" v-model="bs.rows" required />
