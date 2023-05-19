@@ -82,8 +82,10 @@ onMounted(() => {
           </svg>
         </div>
         <h1 class="flex-items">MUSICAL BINGO</h1>
+        <h2 v-if="bingo.subtitle">{{ bingo.subtitle }}</h2>
       </header>
       <BingoTable :index="i"></BingoTable>
+      <footer>Page {{ i + 1 }}/{{ bingo.numberOfSheets }}</footer>
     </div>
   </div>
 </template>
@@ -92,6 +94,10 @@ onMounted(() => {
 header {
   text-align: center;
 }
+footer {
+  margin-top: 1em;
+  text-align: right;
+}
 /* header {
   display: flex;
   flex-direction: row;
@@ -99,7 +105,7 @@ header {
   justify-content: normal;
   align-items: normal;
   align-content: normal;
-} 
+}
 
 .flex-items:nth-child(1) {
   display: block;
@@ -142,7 +148,7 @@ header {
 }
 .subpage {
   padding: 1cm;
-  border: 5px red solid;
+  /* border: 5px red solid; */
   /* height: 257mm; */
   /* outline: 2cm #ffeaea solid; */
 }

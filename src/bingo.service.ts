@@ -1,8 +1,13 @@
+import { SpotifyService } from './spotify.service'
+
 export class Bingo {
   public rows = 5
   public cols = 5
+  public subtitle: string | undefined
   /** Original list */
   private cells: string[] = []
+  private spotify = SpotifyService
+
   public numberOfSheets = 20
 
   private shuffledData: string[][] = []
@@ -63,8 +68,18 @@ export class Bingo {
   }
 
   populate(data: string[]) {
+    // We need to make sure we only take the number of songs that can be in the bingo board
+    // Otherwise there might not ever be a winner
     this.cells = data.slice(0, this.cols * this.rows)
 
+    if (data.length > this.cols * this.rows) {
+      // Make a snippet from the playlist eventually
+    }
+
+    this._populate()
+  }
+
+  private _populate() {
     // Store the unique sheets
     const uniqueConfigs = new Set<string>()
 
