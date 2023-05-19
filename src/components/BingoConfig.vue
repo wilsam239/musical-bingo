@@ -67,14 +67,14 @@ function fetch() {
           <input type="text" name="" v-model="bs.numberOfSheets" required />
           <label>Number Of Sheets</label>
         </div>
-        <div class="user-box">
+        <!-- <div class="user-box">
           <input type="text" name="" v-model="bs.rows" required />
           <label>Bingo Rows</label>
         </div>
         <div class="user-box">
           <input type="text" name="" v-model="bs.cols" required />
           <label>Bingo Columns</label>
-        </div>
+        </div> -->
         <!-- <div class="user-box">
         <input type="password" v-model="clientSecret" required>
         <label>Client Secret</label>
