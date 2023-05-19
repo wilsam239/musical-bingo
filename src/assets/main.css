@@ -62,7 +62,7 @@ body {
   font-size: 12px;
 }
 
-.login-box form a {
+.login-box a {
   cursor: pointer;
   position: relative;
   display: inline-block;

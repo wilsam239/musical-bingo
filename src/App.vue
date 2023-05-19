@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-    <div class="config-pages">
-    <div class="login-box">
-        <RouterView />
-    </div>
-    </div>
+  <RouterView />
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

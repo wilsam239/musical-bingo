@@ -1,8 +1,10 @@
+import { BingoService } from '@/bingo.service'
 import { SpotifyService } from '@/spotify.service'
 import { createRouter, createWebHistory } from 'vue-router'
 import BingoView from '../views/BingoView.vue'
 
 const spotify = SpotifyService
+const bingo = BingoService
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -25,7 +27,9 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  if (to.name !== 'login' && !spotify.isLoggedIn) {
+  if (to.name === 'config' && !spotify.isLoggedIn) {
+    return { name: 'login' }
+  } else if (to.name === 'bingo' && !bingo.isPopulated) {
     return { name: 'login' }
   }
 })

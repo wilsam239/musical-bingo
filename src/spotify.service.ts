@@ -88,6 +88,10 @@ export class Spotify {
     return this.userSession.client_secret
   }
 
+  get access_token() {
+    return this.userSession.access_token ?? ''
+  }
+
   get isLoggedIn() {
     return (
       !!this.userSession.access_token &&
