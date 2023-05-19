@@ -93,6 +93,12 @@ export class Bingo {
   }
 
   fetchTable(id: number) {
+    if (id >= this.shuffledData.length) {
+      console.error('Index is greater than the number of sheets')
+      return [[]]
+    }
+
+    const data = this.shuffledData[id]
     const result: string[][] = []
     let index = 0
 
@@ -100,7 +106,7 @@ export class Bingo {
       const row: string[] = []
 
       for (let j = 0; j < this.cols; j++) {
-        row.push(this.cells[index])
+        row.push(data[index])
         index++
       }
 
