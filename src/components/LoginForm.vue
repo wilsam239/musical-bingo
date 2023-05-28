@@ -5,13 +5,22 @@ import { SpotifyService } from '@/services/spotify.service'
 import { onMounted, ref } from 'vue'
 
 const clientID = ref('id')
-const clientSecret = ref('secret')
+// const clientSecret = ref('secret')
 const ss = SpotifyService
 const snackbar = SnackbarService
-
+let code
 onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  code = params.get('code')
+
+  if (code) {
+    ss.loginWithCode(code).subscribe(() => {
+      router.push('/config')
+    })
+  }
+
   clientID.value = ss.clientID
-  clientSecret.value = ss.clientSecret
+  // clientSecret.value = ss.clientSecret
   if (ss.isLoggedIn) {
     console.log('Still logged in')
     router.push('/config')
@@ -19,10 +28,7 @@ onMounted(() => {
 })
 
 function login() {
-  ss.login(clientID.value, clientSecret.value).subscribe(() => {
-    snackbar.msgSuccess('Logged in!', '')
-    router.push('/config')
-  })
+  ss.loginNoCode()
 }
 </script>
 
@@ -35,10 +41,10 @@ function login() {
           <input type="text" name="" v-model="clientID" required />
           <label>Client ID</label>
         </div>
-        <div class="user-box">
+        <!-- <div class="user-box">
           <input type="password" v-model="clientSecret" required />
           <label>Client Secret</label>
-        </div>
+        </div> -->
         <a v-on:click="login()">
           <span></span>
           <span></span>
