@@ -17,6 +17,9 @@ onMounted(() => {
   <div class="page">
     <div class="subpage">
       <h1>Setup</h1>
+      <p>
+        Link to Playlist: <a v-bind:href="bingo.playlistURL">{{ bingo.playlistURL }}</a>
+      </p>
       <ul>
         <li>Print all of the following sheets.</li>
         <li>

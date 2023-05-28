@@ -25,13 +25,9 @@ function fetch() {
   const id = extractPlaylistId(playlistURL.value)
 
   if (id) {
-    ss.fetchPlaylist(id).subscribe((songs) => {
-      if (songs.length < bs.rows * bs.cols) {
-        console.error('Not enough songs in the playlist')
-      } else {
-        bs.populate(songs)
-        router.push('/bingo')
-      }
+    ss.fetchPlaylist(id).subscribe((playlist) => {
+      bs.playlistInfo = playlist
+      router.push('/bingo')
     })
   }
 }

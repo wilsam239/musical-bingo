@@ -14,6 +14,8 @@ export class Bingo {
   private shuffledData: string[][] = []
   public hasTooManySongs = false
 
+  private _playlistInfo!: SpotifyPlaylist
+
   constructor() {
     this.populate([
       'Last Night - Morgan Wallen',
@@ -260,6 +262,22 @@ export class Bingo {
       return Object.values(this._winners)
     }
     return []
+  }
+
+  set playlistInfo(p: SpotifyPlaylist) {
+    this._playlistInfo = p
+    const songs = p.tracks.items.map(
+      (i) => `${i.track.name} - ${i.track.artists.map((a) => a.name).join(', ')}`
+    )
+    if (songs.length < this.rows * this.cols) {
+      console.error('Not enough songs in the playlist')
+    } else {
+      this.populate(songs)
+    }
+  }
+
+  get playlistURL() {
+    return this._playlistInfo.external_urls.spotify
   }
 }
 

@@ -45,11 +45,9 @@ export class Spotify {
         authorization: `Bearer ${this.access_token}`
       }
     }).pipe(
-      map((playlist: SpotifyPlaylist) => {
+      tap((playlist: SpotifyPlaylist) => {
         console.log(playlist)
-        return playlist.tracks.items.map(
-          (i) => `${i.track.name} - ${i.track.artists.map((a) => a.name).join(', ')}`
-        )
+        
       })
     )
   }
