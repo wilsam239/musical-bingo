@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { BingoService } from '@/bingo.service'
 import router from '@/router'
-import { SpotifyService } from '@/spotify.service'
+import { BingoService } from '@/services/bingo.service'
+import { SpotifyService } from '@/services/spotify.service'
 import { ref } from 'vue'
 
 const playlistURL = ref(

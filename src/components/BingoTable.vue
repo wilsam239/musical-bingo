@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BingoService } from '@/bingo.service'
+import { BingoService } from '@/services/bingo.service'
 
 const bs = BingoService
 interface BingoTableProps {

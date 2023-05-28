@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { BingoService } from '@/bingo.service'
 import BingoTable from '@/components/BingoTable.vue'
+import { BingoService } from '@/services/bingo.service'
 import type { Ref } from 'vue'
 import { onMounted, ref } from 'vue'
 
@@ -29,7 +29,7 @@ onMounted(() => {
           <br />
           The winning card order for this one is:
           <div>
-            <div v-for="(place, index) of bingo.winners" :key="place">
+            <div v-for="(place, index) of bingo.winners" :key="index">
               {{ index + 1 }}
               <ul>
                 <li v-for="page of place" :key="page">

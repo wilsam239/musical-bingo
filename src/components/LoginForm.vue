@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import router from '@/router'
-import { SpotifyService } from '@/spotify.service'
+import { SnackbarService } from '@/services/snackbar.service'
+import { SpotifyService } from '@/services/spotify.service'
 import { onMounted, ref } from 'vue'
 
 const clientID = ref('id')
 const clientSecret = ref('secret')
 const ss = SpotifyService
+const snackbar = SnackbarService
 
 onMounted(() => {
   clientID.value = ss.clientID
@@ -17,9 +19,15 @@ onMounted(() => {
 })
 
 function login() {
-  ss.login(clientID.value, clientSecret.value).subscribe(() => {
-    router.push('/config')
-  })
+  ss.login(clientID.value, clientSecret.value).subscribe(
+    () => {
+      router.push('/config')
+    },
+    (err) => {
+      console.error(err)
+      snackbar.msgError('Could Not Login', err.message)
+    }
+  )
 }
 </script>
 

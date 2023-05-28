@@ -119,3 +119,45 @@ body {
   height: 100%;
   background: linear-gradient(360deg, transparent, #03e9f4);
 }
+
+#snackbars {
+  flex-direction: column;
+  display: flex;
+  position: absolute;
+  right: 0;
+  /* z-index: ; */
+}
+
+.snackbar {
+  max-height: 100px;
+  width: 300px;
+  /* float: right; */
+  margin: 1em;
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.6);
+  padding: 8px;
+}
+
+.snackbar h2 {
+  margin-bottom: 8px;
+  margin-top: 8px;
+}
+
+.success {
+  background-color: #28a745 !important;
+  color: white;
+}
+
+.danger {
+  background-color: #dc3545 !important;
+  color: white;
+}
+
+.info {
+  background-color: #17a2b8 !important;
+  color: white;
+}
+
+.warn {
+  background-color: #ffc107 !important;
+  color: #343a40 !important;
+}

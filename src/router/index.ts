@@ -1,5 +1,5 @@
-import { BingoService } from '@/bingo.service'
-import { SpotifyService } from '@/spotify.service'
+import { BingoService } from '@/services/bingo.service'
+import { SpotifyService } from '@/services/spotify.service'
 import { createRouter, createWebHistory } from 'vue-router'
 import BingoView from '../views/BingoView.vue'
 
