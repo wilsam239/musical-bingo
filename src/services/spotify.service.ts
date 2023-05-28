@@ -1,6 +1,8 @@
-import { from, map, mergeMap, tap } from 'rxjs'
+import { catchError, from, map, mergeMap, tap, throwError } from 'rxjs'
+import { SnackbarService } from './snackbar.service'
 
 export class Spotify {
+  private snack = SnackbarService
   private url = 'https://api.spotify.com/v1/'
   private userSession: {
     client_id: string
@@ -55,8 +57,27 @@ export class Spotify {
   private api(_url: string, init?: RequestInit) {
     const url = _url.startsWith('https://') ? _url : this.url + _url
     return from(fetch(url, init)).pipe(
-      mergeMap((response) => response.text()),
-      map((response) => JSON.parse(response))
+      mergeMap((response) => {
+        if (response.status < 400) {
+          return response.text()
+        } else {
+          return from(response.text()).pipe(
+            map((body) => JSON.parse(body)),
+            mergeMap((body) => {
+              return throwError(() => {
+                return { title: body.error, message: body.error_description }
+              })
+            })
+          )
+        }
+      }),
+      map((response) => JSON.parse(response)),
+      tap((r) => console.log(r)),
+      catchError((err) => {
+        console.error(err)
+        this.snack.msgError('API Error', err.message)
+        return throwError(() => err)
+      })
     )
   }
 

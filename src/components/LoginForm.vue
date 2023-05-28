@@ -19,15 +19,10 @@ onMounted(() => {
 })
 
 function login() {
-  ss.login(clientID.value, clientSecret.value).subscribe(
-    () => {
-      router.push('/config')
-    },
-    (err) => {
-      console.error(err)
-      snackbar.msgError('Could Not Login', err.message)
-    }
-  )
+  ss.login(clientID.value, clientSecret.value).subscribe(() => {
+    snackbar.msgSuccess('Logged in!', '')
+    router.push('/config')
+  })
 }
 </script>
 
