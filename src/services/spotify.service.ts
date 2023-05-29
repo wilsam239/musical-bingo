@@ -21,6 +21,14 @@ class Spotify {
     )
   }
 
+  clearSession() {
+    this.userSession = {
+      client_id: this.clientID
+    }
+
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
+  }
+
   /**
    * Taken from the api docs
    * https://developer.spotify.com/documentation/web-api/howtos/web-app-profile

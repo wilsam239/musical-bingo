@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import router from '@/router'
-import { SpotifyService } from '@/services/spotify.service'
-import { onMounted, ref } from 'vue'
+import router from '@/router';
+import { SpotifyService } from '@/services/spotify.service';
+import { onMounted, ref, watch } from 'vue';
 
 const clientID = ref('id')
 const ss = SpotifyService
 
 let code
+let loading = ref(true);
 onMounted(() => {
   const params = new URLSearchParams(window.location.search)
   code = params.get('code')
@@ -15,6 +16,8 @@ onMounted(() => {
     ss.loginWithCode(code).subscribe(() => {
       router.push('/config')
     })
+  } else {
+    loading.value = false
   }
 
   clientID.value = ss.clientID
@@ -25,32 +28,38 @@ onMounted(() => {
   }
 })
 
-function login() {
-  ss.loginNoCode()
-}
+watch(clientID, (val) => {
+  ss.clientID = val
+})
+
 </script>
 
 <template>
   <div class="config-pages">
     <div class="login-box">
-      <h2>Login</h2>
-      <form>
-        <div class="user-box">
-          <input type="text" name="" v-model="clientID" required />
-          <label>Client ID</label>
-        </div>
-        <!-- <div class="user-box">
-          <input type="password" v-model="clientSecret" required />
-          <label>Client Secret</label>
-        </div> -->
-        <a v-on:click="login()">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          Login
-        </a>
-      </form>
+      <div v-if="!loading">
+        <h2>Login</h2>
+        <form>
+          <div class="user-box">
+            <input type="text" name="" v-model="clientID" required />
+            <label>Client ID</label>
+          </div>
+          <!-- <div class="user-box">
+              <input type="password" v-model="clientSecret" required />
+              <label>Client Secret</label>
+            </div> -->
+          <a @click="ss.loginNoCode()">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Login
+          </a>
+        </form>
+      </div>
+      <div v-else>
+        <div class="loading"></div>
+      </div>
     </div>
   </div>
 </template>
