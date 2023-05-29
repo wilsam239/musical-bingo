@@ -26,22 +26,6 @@ onMounted(() => {
           Announce over the microphone that anyone wishing to play musical bingo can receive a sheet
           with any qualifying purchase at the bar of food or drinks.
         </li>
-        <li v-if="bingo.hasTooManySongs">
-          For this particular playlist, there are too many songs in the playlist, this means you
-          must play it in order without shuffling, from the first song in the list.
-          <br />
-          The winning card order for this one is:
-          <div>
-            <div v-for="(place, index) of bingo.winners" :key="index">
-              {{ index + 1 }}
-              <ul>
-                <li v-for="page of place" :key="page">
-                  {{ page }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </li>
       </ul>
     </div>
   </div>

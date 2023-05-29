@@ -1,22 +1,23 @@
-import { catchError, from, map, mergeMap, of, tap, throwError } from 'rxjs'
+import type { SpotifyUser } from '@/types/user'
+import { Observable, catchError, from, map, mergeMap, of, tap, throwError } from 'rxjs'
 import { SnackbarService } from './snackbar.service'
 
-export class Spotify {
+class Spotify {
   private snack = SnackbarService
   private url = 'https://api.spotify.com/v1/'
   private userSession: {
     client_id: string
-    client_secret: string
     access_token?: string
     expiry?: number
   }
+
+  private me!: SpotifyUser
 
   constructor() {
     this.userSession = JSON.parse(
       localStorage.getItem('userSession') ??
         JSON.stringify({
-          client_id: '',
-          client_secret: ''
+          client_id: ''
         })
     )
   }
@@ -49,6 +50,9 @@ export class Spotify {
       .replace(/=+$/, '')
   }
 
+  /**
+   * Go to the spotify oauth page to get an exchange code
+   */
   async loginNoCode() {
     const verifier = this.generateCodeVerifier(128)
     const challenge = await this.generateCodeChallenge(verifier)
@@ -68,6 +72,11 @@ export class Spotify {
     document.location = `https://accounts.spotify.com/authorize?${params.toString()}`
   }
 
+  /**
+   * After coming back from spotify oauth page, call the api to login now that we have an exchange code
+   * @param code Exchange code from spotify api
+   * @returns
+   */
   loginWithCode(code: string) {
     const verifier = localStorage.getItem('verifier')
     const params = new URLSearchParams()
@@ -88,27 +97,32 @@ export class Spotify {
         console.log(response)
         this.access_token = response.access_token
         this.expiry = response.expires_in
-      })
+      }),
+      mergeMap(() => this.fetchMe())
     )
   }
-  login(id: string, secret: string) {
-    this.clientID = id
-    this.clientSecret = secret
 
-    return this.api('https://accounts.spotify.com/api/token', {
-      method: 'POST',
+  /**
+   * Get the users info from the /me endpoint
+   */
+  fetchMe() {
+    return this.api(`me`, {
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: `grant_type=client_credentials&client_id=${id}&client_secret=${secret}`
+        authorization: `Bearer ${this.access_token}`
+      }
     }).pipe(
-      tap((response) => {
-        this.access_token = response.access_token
-        this.expiry = response.expires_in
+      tap((me) => {
+        this.me = me
+        console.log(me)
       })
     )
   }
 
+  /**
+   * Fetch a spotify playlist, and if necessary, make a subplaylist out of it so that we can use it for bingo
+   * @param id Id of the spotify playlist
+   * @returns
+   */
   fetchPlaylist(id: string) {
     return this.api(`playlists/${id}`, {
       headers: {
@@ -119,13 +133,95 @@ export class Spotify {
         console.log(playlist)
       }),
       mergeMap((playlist: SpotifyPlaylist) => {
-        // if there are more than rows * cols songs, make a sub playlist
-
-        return of(playlist)
+        // CUrrently this is hardcoded to 25
+        if (playlist.tracks.items.length > 25) {
+          return this.makeSubPlaylist(playlist, 25)
+        } else {
+          return of(playlist)
+        }
       })
     )
   }
 
+  /**
+   * Shuffle the track list around so that we get a unique set of songs that aren't in order
+   * @param strings
+   * @returns
+   */
+  private shuffle(strings: Track[]) {
+    const shuffledArray = strings.slice()
+
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]]
+    }
+
+    return shuffledArray
+  }
+
+  /**
+   * Generate a bingo playlist of fixed length
+   * @param p The original playlist
+   * @param length The length of the new one
+   * @returns
+   */
+  makeSubPlaylist(p: SpotifyPlaylist, length: number): Observable<any> {
+    if (length > p.tracks.items.length) {
+      return throwError(() => {
+        return {
+          title: 'Not enough tracks',
+          message: `Cannot make a playlist that has ${length} tracks, when the original playlist doesn't have that many songs`
+        }
+      })
+    }
+    // Construct the body
+    const today = new Date(Date.now())
+    const body = {
+      name: `Musical Bingo - ${today.toLocaleDateString()}`,
+      description: `Auto generated bingo for ${today.toLocaleDateString()}`,
+      public: false
+    }
+
+    // Get the song selection
+    const songSelection = this.shuffle(p.tracks.items).slice(0, length)
+
+    // Create a new playlist
+    return this.api(`users/${this.me.id}/playlists`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${this.access_token}`
+      },
+      body: JSON.stringify(body)
+    }).pipe(
+      mergeMap((newPlaylist: SpotifyPlaylist) => {
+        const tracksBody = {
+          position: 0,
+          uris: songSelection.map((t) => t.track.uri)
+        }
+        // Add the songs to the new playlist
+        return this.api(`playlists/${newPlaylist.id}/tracks`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${this.access_token}`
+          },
+          body: JSON.stringify(tracksBody)
+        }).pipe(
+          mergeMap(() => {
+            return this.fetchPlaylist(newPlaylist.id)
+          })
+        )
+      })
+    )
+  }
+
+  /**
+   * The api call that is made to spotify with fetch requests and converted to rxjs
+   * @param _url URL to go to, can be just a subsection eg: /playlists or can be a whole url
+   *
+   * If a subssection, it will be prepended with the spotify api url
+   * @param init The request headers, body, and auth
+   * @returns
+   */
   private api(_url: string, init?: RequestInit) {
     const url = _url.startsWith('https://') ? _url : this.url + _url
     return from(fetch(url, init)).pipe(
@@ -144,7 +240,6 @@ export class Spotify {
         }
       }),
       map((response) => JSON.parse(response)),
-      tap((r) => console.log(r)),
       catchError((err) => {
         console.error(err)
         this.snack.msgError('API Error', err.message)
@@ -155,11 +250,6 @@ export class Spotify {
 
   set clientID(id: string) {
     this.userSession.client_id = id
-    localStorage.setItem('userSession', JSON.stringify(this.userSession))
-  }
-
-  set clientSecret(secret: string) {
-    this.userSession.client_secret = secret
     localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
@@ -175,10 +265,6 @@ export class Spotify {
 
   get clientID() {
     return this.userSession.client_id
-  }
-
-  get clientSecret() {
-    return this.userSession.client_secret
   }
 
   get access_token() {
