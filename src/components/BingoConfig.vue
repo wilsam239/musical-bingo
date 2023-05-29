@@ -38,7 +38,7 @@ function fetch() {
     <div class="login-box">
       <div class="row">
         <div class="column-1">
-          <a id="back-button" href="/login">
+          <a id="back-button" href="/musical-bingo/login">
             <span></span>
             <span></span>
             <span></span>
