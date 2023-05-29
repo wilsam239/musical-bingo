@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import router from '@/router'
-import { SnackbarService } from '@/services/snackbar.service'
 import { SpotifyService } from '@/services/spotify.service'
 import { onMounted, ref } from 'vue'
 
 const clientID = ref('id')
-// const clientSecret = ref('secret')
 const ss = SpotifyService
-const snackbar = SnackbarService
+
 let code
 onMounted(() => {
   const params = new URLSearchParams(window.location.search)

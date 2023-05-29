@@ -16,60 +16,7 @@ export class Bingo {
 
   private _playlistInfo!: SpotifyPlaylist
 
-  constructor() {
-    this.populate([
-      'Last Night - Morgan Wallen',
-      'Daylight - David Kushner',
-      'Flowers - Miley Cyrus',
-      "Boy's a Liar Pt. 2 - PinkPantheress, Ice Spice",
-      'Cupid - Twin Ver. - FIFTY FIFTY',
-      'Kill Bill - SZA',
-      'Fast Car - Luke Combs',
-      'As It Was - Harry Styles',
-      "Creepin' (with The Weeknd & 21 Savage) - Metro Boomin, The Weeknd, 21 Savage",
-      'MATHEMATICAL DISRESPECT - Lil Mabu',
-      'Anti-Hero - Taylor Swift',
-      "I Ain't Worried - OneRepublic",
-      'All My Life (feat. J. Cole) - Lil Durk, J. Cole',
-      'Something in the Orange - Zach Bryan',
-      'Players - Coi Leray',
-      'See You Again (feat. Kali Uchis) - Tyler, The Creator, Kali Uchis',
-      'Miracle (with Ellie Goulding) - Calvin Harris, Ellie Goulding',
-      'Escapism. - RAYE, 070 Shake',
-      'Eyes Closed - Ed Sheeran',
-      'Until I Found You (with Em Beihold) - Em Beihold Version - Stephen Sanchez, Em Beihold',
-      'Riptide - Vance Joy',
-      'You Proof - Morgan Wallen',
-      'Chemical - Post Malone',
-      'No Role Modelz - J. Cole',
-      'Die For You (with Ariana Grande) - Remix - The Weeknd, Ariana Grande',
-      'ceilings - Lizzy McAlpine',
-      'Never Felt So Alone - Labrinth',
-      'Area Codes - Kali',
-      'Unholy (feat. Kim Petras) - Sam Smith, Kim Petras',
-      'Shivers - Ed Sheeran',
-      'Snooze - SZA',
-      'The Kind of Love We Make - Luke Combs',
-      'Calm Down (with Selena Gomez) - Rema, Selena Gomez',
-      'Die For You - The Weeknd',
-      "I'm Good (Blue) - David Guetta, Bebe Rexha",
-      'Sure Thing - Miguel',
-      '10:35 - Tiësto, Tate McRae',
-      'Someone You Loved - Lewis Capaldi',
-      'Mr. Brightside - The Killers',
-      'Wish You The Best - Lewis Capaldi',
-      'Yellow - Coldplay',
-      'Viva La Vida - Coldplay',
-      'golden hour - JVKE',
-      'Cruel Summer - Taylor Swift',
-      'Another Love - Tom Odell',
-      'Money Trees - Kendrick Lamar, Jay Rock',
-      'Green Green Grass - George Ezra',
-      'People - Libianca',
-      'The Color Violet - Tory Lanez',
-      'Rhyme Dust - MK, Dom Dolla'
-    ])
-  }
+  constructor() {}
 
   populate(data: string[]) {
     // We need to make sure we only take the number of songs that can be in the bingo board
@@ -100,8 +47,8 @@ export class Bingo {
       }
     }
 
-    this.findWinners()
-    console.log(this._winners)
+    // this.findWinners()
+    // console.log(this._winners)
   }
 
   private findWinners() {
