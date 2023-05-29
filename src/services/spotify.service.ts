@@ -9,9 +9,8 @@ class Spotify {
     client_id: string
     access_token?: string
     expiry?: number
+    user?: SpotifyUser
   }
-
-  private me!: SpotifyUser
 
   constructor() {
     this.userSession = JSON.parse(
@@ -174,6 +173,7 @@ class Spotify {
         }
       })
     }
+
     // Construct the body
     const today = new Date(Date.now())
     const body = {
@@ -185,32 +185,42 @@ class Spotify {
     // Get the song selection
     const songSelection = this.shuffle(p.tracks.items).slice(0, length)
 
+    let startingObs = of(true)
+
+    if (!this.me) {
+      startingObs = this.fetchMe()
+    }
+
     // Create a new playlist
-    return this.api(`users/${this.me.id}/playlists`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${this.access_token}`
-      },
-      body: JSON.stringify(body)
-    }).pipe(
-      mergeMap((newPlaylist: SpotifyPlaylist) => {
-        const tracksBody = {
-          position: 0,
-          uris: songSelection.map((t) => t.track.uri)
-        }
-        // Add the songs to the new playlist
-        return this.api(`playlists/${newPlaylist.id}/tracks`, {
+    return startingObs.pipe(
+      mergeMap(() =>
+        this.api(`users/${this.me!.id}/playlists`, {
           method: 'POST',
           headers: {
             authorization: `Bearer ${this.access_token}`
           },
-          body: JSON.stringify(tracksBody)
+          body: JSON.stringify(body)
         }).pipe(
-          mergeMap(() => {
-            return this.fetchPlaylist(newPlaylist.id)
+          mergeMap((newPlaylist: SpotifyPlaylist) => {
+            const tracksBody = {
+              position: 0,
+              uris: songSelection.map((t) => t.track.uri)
+            }
+            // Add the songs to the new playlist
+            return this.api(`playlists/${newPlaylist.id}/tracks`, {
+              method: 'POST',
+              headers: {
+                authorization: `Bearer ${this.access_token}`
+              },
+              body: JSON.stringify(tracksBody)
+            }).pipe(
+              mergeMap(() => {
+                return this.fetchPlaylist(newPlaylist.id)
+              })
+            )
           })
         )
-      })
+      )
     )
   }
 
@@ -246,6 +256,15 @@ class Spotify {
         return throwError(() => err)
       })
     )
+  }
+
+  get me() {
+    return this.userSession.user ?? undefined
+  }
+
+  set me(u: SpotifyUser | undefined) {
+    this.userSession.user = u
+    localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
   set clientID(id: string) {
