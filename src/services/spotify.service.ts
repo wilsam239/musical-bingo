@@ -254,7 +254,7 @@ class Spotify {
   }
 
   set expiry(expires_in: number) {
-    this.userSession.expiry = Date.now() + expires_in
+    this.userSession.expiry = Date.now() + expires_in * 1000
     localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
 
