@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import BingoTable from '@/components/BingoTable.vue'
-import { BingoService } from '@/services/bingo.service'
-import type { Ref } from 'vue'
-import { onMounted, ref } from 'vue'
+import BingoTable from '@/components/BingoTable.vue';
+import { BingoService } from '@/services/bingo.service';
+import type { Ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const iterations: Ref<number[]> = ref([])
 const bingo = BingoService
@@ -25,6 +25,14 @@ onMounted(() => {
         <li>
           Announce over the microphone that anyone wishing to play musical bingo can receive a sheet
           with any qualifying purchase at the bar of food or drinks.
+        </li>
+        <li>It's up to you how you want to track the songs that have been played so you can verify winners.
+          <br><br>
+          You could write down the songs that are played everytime a new one comes on.
+          <br><br>
+          Or you could check the songs in the queue that remain, and if the songs that the player has bingo for are not in the queue, then they win
+          <br><br>
+          Or you could just play the playlist in order from the top so you know whats been played.
         </li>
       </ul>
     </div>
