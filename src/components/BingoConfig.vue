@@ -28,7 +28,7 @@ function fetch() {
 
   if (id) {
     loading.value = true
-    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true}).subscribe((playlist) => {
+    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true, subtitle: bs.subtitle}).subscribe((playlist) => {
       bs.playlistInfo = playlist
       router.push('/bingo')
     })
