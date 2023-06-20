@@ -20,13 +20,18 @@ onMounted(() => {
       <p>
         Link to Playlist: <a v-bind:href="bingo.playlistURL">{{ bingo.playlistURL }}</a>
       </p>
+      <p><b>START OF SCRIPT</b></p>
+      <p>Welcome to Welders Dog Musical Bingo! We've got X rounds of Bingo tonight, but there's no pressure to stay for all of them! The best thing about bingo is that you can come in and join at any time, or leave at any time! To play bingo all you need to do is make any qualifying purchase at the bar, which is any food or beverage.</p>
+      <p>As usual we have prizes up for grabs in each round! 1st prize in each round will receive a Welders Dog 4 Pack from the fridge, and second place will receive a single Welders Dog Beer from the fridge. Limit is one win per team per round, so you cannot win both 1st and 2nd prize in the round.</p>
+      <p>Bingo is played in teams, all you have to do is listen out for the songs on your sheet, and as you hear them, mark them off. Once you have the <i>--insert bingo pattern here eg: 5 down, 5 across, or 5 diagonal--</i> sing out bingo and come and see us at the bar to verify your win!</p>
+      <p>After both prizes have been claimed we move on to the next round.</p>
+      <p>Tonights menu on the food truck is <i>--read out menu here--</i>, but if that doesn't take your fancy you are welcome to order delivery from the Union Bar next door. Order and pay on your phone using the QR codes available at the bar or on your bingo sheet. Use code WELDERS10 for a discount.</p>
+      <p>We have a few events coming up over the next week, <i>--read out events here--</i></p>
+
+      <p><b>END OF SCRIPT</b></p>
       <ul>
         <li>Print all of the following sheets.</li>
-        <li>
-          Announce over the microphone that anyone wishing to play musical bingo can receive a sheet
-          with any qualifying purchase at the bar of food or drinks.
-        </li>
-        <li>It's up to you how you want to track the songs that have been played so you can verify winners.
+        <li>Keep track of songs played in one of the following ways:
           <br><br>
           You could write down the songs that are played everytime a new one comes on.
           <br><br>
