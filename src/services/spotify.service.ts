@@ -13,7 +13,9 @@ class Spotify {
     user?: SpotifyUser
   }
 
+  sessionPlaylists: SpotifyPlaylist[] = []
   constructor() {
+    this.sessionPlaylists = JSON.parse(sessionStorage.getItem('playlists') ?? '[]')
     this.userSession = JSON.parse(
       localStorage.getItem('userSession') ??
         JSON.stringify({
@@ -134,7 +136,7 @@ class Spotify {
   fetchPlaylist(
     id: string,
     options: { makeSubPlaylist?: boolean; playlistSize?: number; subtitle?: string } = {}
-  ) {
+  ): Observable<SpotifyPlaylist> {
     return this.api(`playlists/${id}`, {
       headers: {
         authorization: `Bearer ${this.access_token}`
@@ -193,12 +195,33 @@ class Spotify {
     const today = new Date(Date.now())
     const body = {
       name: `Musical Bingo - ${today.toLocaleDateString()} - ${subtitle ?? p.name}`,
-      description: `Auto generated bingo for ${today.toLocaleDateString()}`,
+      description: `Auto generated bingo for ${today.toLocaleDateString()}. Generated from Playlist ${
+        p.name
+      } (${p.external_urls.spotify}).`,
       public: false
     }
 
+    // Gets the songs already used this session
+    const alreadyUsedSongs = this.sessionPlaylists.flatMap((p) =>
+      p.tracks.items.flatMap((t) => t.track.id)
+    )
+
     // Get the song selection
-    const songSelection = this.shuffle(p.tracks.items).slice(0, length)
+    const filtered_songs = p.tracks.items.filter(
+      (song) => !alreadyUsedSongs.includes(song.track.id)
+    )
+
+    // Throw an error if the playlists are too similar
+    if (filtered_songs.length < length) {
+      return throwError(() => {
+        return {
+          title: 'Playlists are too similar',
+          message: `Cannot generate ${length} uniqe songs that haven't already been generated this session.`
+        }
+      })
+    }
+
+    const songSelection = this.shuffle(filtered_songs).slice(0, length)
 
     let startingObs = of(true)
 
@@ -230,7 +253,12 @@ class Spotify {
               body: JSON.stringify(tracksBody)
             }).pipe(
               mergeMap(() => {
-                return this.fetchPlaylist(newPlaylist.id)
+                return this.fetchPlaylist(newPlaylist.id).pipe(
+                  tap((p) => {
+                    this.sessionPlaylists.push(p)
+                    sessionStorage.setItem('playlists', JSON.stringify(this.sessionPlaylists))
+                  })
+                )
               })
             )
           })

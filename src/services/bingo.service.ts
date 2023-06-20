@@ -1,12 +1,12 @@
 import { DEFAULT_SONG_LIMIT, type SpotifyPlaylist } from '@/types/playlist'
 import { SpotifyService } from './spotify.service'
 
-const DEFAULT_SHEET_COUNT = 20;
+const DEFAULT_SHEET_COUNT = 20
 export class Bingo {
   public readonly rows = 5
   public readonly cols = 5
   public subtitle: string | undefined
-  
+
   /** Original list of song names */
   private allCellData: string[] = []
   private spotify = SpotifyService
@@ -22,10 +22,7 @@ export class Bingo {
   constructor() {}
 
   populate(data: string[]) {
-    // We need to make sure we only take the number of songs that can be in the bingo board
-    // Otherwise there might not ever be a winner
-    this.allCellData = data.slice(0, this.cols * this.rows)
-
+    this.allCellData = data
     this._populate()
   }
 
@@ -36,7 +33,7 @@ export class Bingo {
     // Generate enough unique sheets as required
     while (uniqueConfigs.size < this.numberOfSheets) {
       // Shuffle the strings and get only enough to fill the sheet
-      const shuffled = this.shuffle(this.allCellData).slice(0, this.rows*this.cols)
+      const shuffled = this.shuffle(this.allCellData).slice(0, this.rows * this.cols)
 
       const config = JSON.stringify(shuffled) // Convert the shuffled array to a string for set comparison
 

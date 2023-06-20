@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import { BingoService } from '@/services/bingo.service';
+import { SnackbarService } from '@/services/snackbar.service';
 import { SpotifyService } from '@/services/spotify.service';
 import { ref } from 'vue';
 
@@ -9,7 +10,7 @@ const playlistURL = ref(
 )
 const ss = SpotifyService
 const bs = BingoService
-
+const snack = SnackbarService
 let loading = ref(false);
 
 function extractPlaylistId(url: string): string | null {
@@ -28,10 +29,14 @@ function fetch() {
 
   if (id) {
     loading.value = true
-    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true, subtitle: bs.subtitle}).subscribe((playlist) => {
+    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true, subtitle: bs.subtitle}).subscribe({next: (playlist) => {
       bs.playlistInfo = playlist
       router.push('/bingo')
-    })
+    }, error: (err) => {
+      loading .value = false
+      console.error(err);
+      snack.msgInfo(err.title, err.message);
+    }})
   }
 }
 </script>
