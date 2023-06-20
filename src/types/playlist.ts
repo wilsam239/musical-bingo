@@ -1,19 +1,21 @@
-interface ExternalUrls {
+export const DEFAULT_SONG_LIMIT = 25
+
+export interface ExternalUrls {
   spotify: string
 }
 
-interface Followers {
+export interface Followers {
   href: string
   total: number
 }
 
-interface Image {
+export interface Image {
   url: string
   height: number
   width: number
 }
 
-interface Owner {
+export interface Owner {
   external_urls: ExternalUrls
   followers: Followers
   href: string
@@ -23,7 +25,7 @@ interface Owner {
   display_name: string
 }
 
-interface Album {
+export interface Album {
   album_type: string
   total_tracks: number
   available_markets: string[]
@@ -46,7 +48,7 @@ interface Album {
   artists: Artist[]
 }
 
-interface Artist {
+export interface Artist {
   external_urls: ExternalUrls
   href: string
   id: string
@@ -55,7 +57,7 @@ interface Artist {
   uri: string
 }
 
-interface Track {
+export interface Track {
   added_at: string
   added_by: {
     external_urls: ExternalUrls
@@ -90,7 +92,7 @@ interface Track {
   }
 }
 
-interface SpotifyPlaylist {
+export interface SpotifyPlaylist {
   collaborative: boolean
   description: string
   external_urls: ExternalUrls

@@ -1,32 +1,30 @@
+import { DEFAULT_SONG_LIMIT, type SpotifyPlaylist } from '@/types/playlist'
 import { SpotifyService } from './spotify.service'
 
+const DEFAULT_SHEET_COUNT = 20;
 export class Bingo {
-  public rows = 5
-  public cols = 5
+  public readonly rows = 5
+  public readonly cols = 5
   public subtitle: string | undefined
-  /** Original list */
-  private cells: string[] = []
+  
+  /** Original list of song names */
+  private allCellData: string[] = []
   private spotify = SpotifyService
 
-  public numberOfSheets = 20
+  public numberOfSheets = DEFAULT_SHEET_COUNT
   private _winners?: { [key: number]: number[] } = {}
 
   private shuffledData: string[][] = []
-  public hasTooManySongs = false
 
   private _playlistInfo!: SpotifyPlaylist
+  public songLimit = DEFAULT_SONG_LIMIT
 
   constructor() {}
 
   populate(data: string[]) {
     // We need to make sure we only take the number of songs that can be in the bingo board
     // Otherwise there might not ever be a winner
-    this.cells = data.slice(0, this.cols * this.rows)
-
-    if (data.length > this.cols * this.rows) {
-      this.hasTooManySongs = true
-      // Make a snippet from the playlist eventually
-    }
+    this.allCellData = data.slice(0, this.cols * this.rows)
 
     this._populate()
   }
@@ -37,8 +35,9 @@ export class Bingo {
 
     // Generate enough unique sheets as required
     while (uniqueConfigs.size < this.numberOfSheets) {
-      // Shuffle the strings
-      const shuffled = this.shuffle(this.cells)
+      // Shuffle the strings and get only enough to fill the sheet
+      const shuffled = this.shuffle(this.allCellData).slice(0, this.rows*this.cols)
+
       const config = JSON.stringify(shuffled) // Convert the shuffled array to a string for set comparison
 
       if (!uniqueConfigs.has(config)) {
@@ -55,7 +54,7 @@ export class Bingo {
     const sheetPlaces: { [key: number]: number[] } = {}
     const sheetsToCheck = [...this.shuffledData]
     const calledSongs: string[] = []
-    for (const song of this.cells) {
+    for (const song of this.allCellData) {
       calledSongs.push(song)
       const winnersThisRound: number[] = []
 
@@ -201,7 +200,7 @@ export class Bingo {
   }
 
   get isPopulated() {
-    return this.cells.length > 0
+    return this.allCellData.length > 0
   }
 
   get winners() {

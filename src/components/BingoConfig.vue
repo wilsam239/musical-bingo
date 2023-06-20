@@ -28,7 +28,7 @@ function fetch() {
 
   if (id) {
     loading.value = true
-    ss.fetchPlaylist(id).subscribe((playlist) => {
+    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true}).subscribe((playlist) => {
       bs.playlistInfo = playlist
       router.push('/bingo')
     })
@@ -63,6 +63,11 @@ function fetch() {
               <input type="text" name="" v-model="bs.subtitle" required />
               <label>Subtitle (eg: Sponsor, theme)</label>
             </div>
+
+              <div class="user-box">
+                <input type="text" name="" v-model="bs.songLimit" required />
+                <label>Number Of Songs In Playlist</label>
+              </div>
             <div class="user-box">
               <input type="text" name="" v-model="bs.numberOfSheets" required />
               <label>Number Of Sheets</label>

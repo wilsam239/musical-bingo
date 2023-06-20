@@ -1,3 +1,4 @@
+import { DEFAULT_SONG_LIMIT, type SpotifyPlaylist, type Track } from '@/types/playlist'
 import type { SpotifyUser } from '@/types/user'
 import { Observable, catchError, from, map, mergeMap, of, tap, throwError } from 'rxjs'
 import { SnackbarService } from './snackbar.service'
@@ -130,7 +131,10 @@ class Spotify {
    * @param id Id of the spotify playlist
    * @returns
    */
-  fetchPlaylist(id: string) {
+  fetchPlaylist(
+    id: string,
+    options: { makeSubPlaylist?: boolean; playlistSize?: number; subtitle?: string } = {}
+  ) {
     return this.api(`playlists/${id}`, {
       headers: {
         authorization: `Bearer ${this.access_token}`
@@ -140,9 +144,12 @@ class Spotify {
         console.log(playlist)
       }),
       mergeMap((playlist: SpotifyPlaylist) => {
-        // CUrrently this is hardcoded to 25
-        if (playlist.tracks.items.length > 25) {
-          return this.makeSubPlaylist(playlist, 25)
+        if (options?.makeSubPlaylist) {
+          return this.makeSubPlaylist(
+            playlist,
+            options.playlistSize ?? DEFAULT_SONG_LIMIT,
+            options.subtitle
+          )
         } else {
           return of(playlist)
         }
@@ -152,11 +159,11 @@ class Spotify {
 
   /**
    * Shuffle the track list around so that we get a unique set of songs that aren't in order
-   * @param strings
+   * @param songs
    * @returns
    */
-  private shuffle(strings: Track[]) {
-    const shuffledArray = strings.slice()
+  private shuffle(songs: Track[]) {
+    const shuffledArray = songs.slice()
 
     for (let i = shuffledArray.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
@@ -172,7 +179,7 @@ class Spotify {
    * @param length The length of the new one
    * @returns
    */
-  makeSubPlaylist(p: SpotifyPlaylist, length: number): Observable<any> {
+  makeSubPlaylist(p: SpotifyPlaylist, length: number, subtitle?: string): Observable<any> {
     if (length > p.tracks.items.length) {
       return throwError(() => {
         return {
@@ -185,7 +192,7 @@ class Spotify {
     // Construct the body
     const today = new Date(Date.now())
     const body = {
-      name: `Musical Bingo - ${today.toLocaleDateString()}`,
+      name: `Musical Bingo - ${today.toLocaleDateString()} - ${subtitle ?? p.name}`,
       description: `Auto generated bingo for ${today.toLocaleDateString()}`,
       public: false
     }
