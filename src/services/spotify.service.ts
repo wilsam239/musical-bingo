@@ -1,8 +1,21 @@
-import { DEFAULT_SONG_LIMIT, type SpotifyPlaylist, type Track } from '@/types/playlist'
-import type { SpotifyUser } from '@/types/user'
 import { Observable, catchError, from, map, mergeMap, of, tap, throwError } from 'rxjs'
 import { SnackbarService } from './snackbar.service'
 
+interface PlaylistOptions {
+  makeSubPlaylist?: boolean
+  playlistSize?: number
+  subtitle?: string
+  customName?: string
+}
+
+const SCOPE = [
+  'user-read-private',
+  'user-read-email',
+  'playlist-modify-public',
+  'playlist-modify-private',
+  'user-read-playback-state',
+  'user-modify-playback-state'
+]
 class Spotify {
   private snack = SnackbarService
   private url = 'https://api.spotify.com/v1/'
@@ -10,10 +23,10 @@ class Spotify {
     client_id: string
     access_token?: string
     expiry?: number
-    user?: SpotifyUser
+    user?: 
   }
 
-  sessionPlaylists: SpotifyPlaylist[] = []
+  sessionPlaylists: [] = []
   constructor() {
     this.sessionPlaylists = JSON.parse(sessionStorage.getItem('playlists') ?? '[]')
     this.userSession = JSON.parse(
@@ -72,10 +85,7 @@ class Spotify {
     params.append('client_id', this.clientID)
     params.append('response_type', 'code')
     params.append('redirect_uri', `${location.protocol}//${location.host}/musical-bingo/`)
-    params.append(
-      'scope',
-      'user-read-private user-read-email playlist-modify-public playlist-modify-private'
-    )
+    params.append('scope', SCOPE.join(' '))
     params.append('code_challenge_method', 'S256')
     params.append('code_challenge', challenge)
 
@@ -135,7 +145,7 @@ class Spotify {
    */
   fetchPlaylist(
     id: string,
-    options: { makeSubPlaylist?: boolean; playlistSize?: number; subtitle?: string } = {}
+    options: PlaylistOptions = { playlistSize: DEFAULT_SONG_LIMIT }
   ): Observable<SpotifyPlaylist> {
     return this.api(`playlists/${id}`, {
       headers: {
@@ -147,14 +157,22 @@ class Spotify {
       }),
       mergeMap((playlist: SpotifyPlaylist) => {
         if (options?.makeSubPlaylist) {
-          return this.makeSubPlaylist(
-            playlist,
-            options.playlistSize ?? DEFAULT_SONG_LIMIT,
-            options.subtitle
-          )
+          return this.makeSubPlaylist(playlist, options)
         } else {
           return of(playlist)
         }
+      })
+    )
+  }
+
+  fetchPlaybackState() {
+    return this.api(`me/player`, {
+      headers: {
+        authorization: `Bearer ${this.access_token}`
+      }
+    }).pipe(
+      tap((state) => {
+        console.log(state)
       })
     )
   }
@@ -181,7 +199,9 @@ class Spotify {
    * @param length The length of the new one
    * @returns
    */
-  makeSubPlaylist(p: SpotifyPlaylist, length: number, subtitle?: string): Observable<any> {
+  makeSubPlaylist(p: SpotifyPlaylist, options: PlaylistOptions): Observable<any> {
+    console.log(options)
+    const length = options.playlistSize ?? DEFAULT_SONG_LIMIT
     if (length > p.tracks.items.length) {
       return throwError(() => {
         return {
@@ -194,7 +214,9 @@ class Spotify {
     // Construct the body
     const today = new Date(Date.now())
     const body = {
-      name: `Musical Bingo - ${today.toLocaleDateString()} - ${subtitle ?? p.name}`,
+      name:
+        options.customName ??
+        `Musical Bingo - ${today.toLocaleDateString()} - ${options.subtitle ?? p.name}`,
       description: `Auto generated bingo for ${today.toLocaleDateString()}. Generated from Playlist ${
         p.name
       } (${p.external_urls.spotify}).`,

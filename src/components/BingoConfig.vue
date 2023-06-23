@@ -29,9 +29,13 @@ function fetch() {
 
   if (id) {
     loading.value = true
-    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true, subtitle: bs.subtitle}).subscribe({next: (playlist) => {
+    ss.fetchPlaylist(id, {playlistSize: bs.songLimit, makeSubPlaylist: true, subtitle: bs.subtitle, customName: bs.customName}).subscribe({next: (playlist) => {
       bs.playlistInfo = playlist
+      if(bs.numberOfSheets > 0) {
       router.push('/bingo')
+      } else {
+        snack.msgSuccess("Success", "Playlist has been made!");
+      }
     }, error: (err) => {
       loading .value = false
       console.error(err);
@@ -64,8 +68,12 @@ function fetch() {
               <input type="text" name="" v-model="playlistURL" required />
               <label>Playlit URL</label>
             </div>
+                        <div class="user-box">
+                <input type="text" name="" v-model="bs.customName" />
+                <label>Playlist Name (Optional)</label>
+              </div>
             <div class="user-box">
-              <input type="text" name="" v-model="bs.subtitle" required />
+              <input type="text" name="" v-model="bs.subtitle" />
               <label>Subtitle (eg: Sponsor, theme)</label>
             </div>
 

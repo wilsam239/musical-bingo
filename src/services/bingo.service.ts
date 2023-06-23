@@ -6,6 +6,7 @@ export class Bingo {
   public readonly rows = 5
   public readonly cols = 5
   public subtitle: string | undefined
+  public customName: string | undefined
 
   /** Original list of song names */
   private allCellData: string[] = []
@@ -209,13 +210,15 @@ export class Bingo {
 
   set playlistInfo(p: SpotifyPlaylist) {
     this._playlistInfo = p
-    const songs = p.tracks.items.map(
-      (i) => `${i.track.name} - ${i.track.artists.map((a) => a.name).join(', ')}`
-    )
-    if (songs.length < this.rows * this.cols) {
-      console.error('Not enough songs in the playlist')
-    } else {
-      this.populate(songs)
+    if (this.numberOfSheets > 0) {
+      const songs = p.tracks.items.map(
+        (i) => `${i.track.name} - ${i.track.artists.map((a) => a.name).join(', ')}`
+      )
+      if (songs.length < this.rows * this.cols) {
+        console.error('Not enough songs in the playlist')
+      } else {
+        this.populate(songs)
+      }
     }
   }
 

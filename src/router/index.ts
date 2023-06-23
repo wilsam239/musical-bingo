@@ -22,6 +22,11 @@ const router = createRouter({
       path: '/bingo',
       name: 'bingo',
       component: BingoView
+    },
+    {
+      path: '/dashboard', 
+      name: 'dashboard',
+      component: () => import('../components/BingoRun.vue')
     }
   ]
 })
