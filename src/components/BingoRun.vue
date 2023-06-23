@@ -2,26 +2,63 @@
 import { BingoService } from '@/services/bingo.service';
 import { SnackbarService } from '@/services/snackbar.service';
 import { SpotifyService } from '@/services/spotify.service';
-import { onMounted } from 'vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const skipTime = ref(
-  undefined
+  ""
 )
 
+const playedSongs: Set<string> = new Set()
 const currentSong = ref("");
 const ss = SpotifyService
 const bs = BingoService
 const snack = SnackbarService
 let loading = ref(false);
 
+let skipInterval: number;
+
 onMounted(() => {
+  getCurrentSong();
   setInterval(() => {
-   ss.fetchPlaybackState().subscribe() 
+    getCurrentSong();
   }, 5000)
 })
+
+function getCurrentSong() {
+  ss.fetchPlaybackState().subscribe((resp: SpotifyApi.CurrentPlaybackResponse): void => {
+    if (resp && resp.item && resp.item.type == "track") {
+      currentSong.value = `${resp.item.name} - ${resp.item.artists.map(a => a.name).join(', ')}`;
+      playedSongs.add(currentSong.value);
+    }
+  })
+}
+
 function skipUpdate() {
 
+  const timer = parseInt(skipTime.value);
+  if(isNaN(timer) || timer <= 5) {
+    console.error('Not a valid time');
+    return;
+  }
+
+  if(skipInterval !== undefined) {
+  clearInterval(skipInterval);
+  }
+
+  skipInterval = setInterval(() => {
+    if(currentSong.value) {
+    console.log("skipping!")
+    ss.nextTrack().subscribe()
+    } else {
+      console.log("No current song")
+    }
+  }, timer * 1000)
+
+  snack.msgSuccess("Timer updated!", "")
+}
+
+function logSongs() {
+  console.log(playedSongs)
 }
 </script>
 
@@ -58,6 +95,13 @@ function skipUpdate() {
             <span></span>
               Update Skip Timer
           </a>
+          <a @click="logSongs()">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+                View Played Songs
+            </a>
         </form>
       </div>
       <div v-else>

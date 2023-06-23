@@ -1,5 +1,4 @@
-import { DEFAULT_SONG_LIMIT, type SpotifyPlaylist } from '@/types/playlist'
-import { SpotifyService } from './spotify.service'
+import { DEFAULT_SONG_LIMIT, SpotifyService } from './spotify.service'
 
 const DEFAULT_SHEET_COUNT = 20
 export class Bingo {
@@ -17,7 +16,7 @@ export class Bingo {
 
   private shuffledData: string[][] = []
 
-  private _playlistInfo!: SpotifyPlaylist
+  private _playlistInfo!: SpotifyApi.PlaylistObjectFull
   public songLimit = DEFAULT_SONG_LIMIT
 
   constructor() {}
@@ -208,11 +207,11 @@ export class Bingo {
     return []
   }
 
-  set playlistInfo(p: SpotifyPlaylist) {
+  set playlistInfo(p: SpotifyApi.PlaylistObjectFull) {
     this._playlistInfo = p
     if (this.numberOfSheets > 0) {
       const songs = p.tracks.items.map(
-        (i) => `${i.track.name} - ${i.track.artists.map((a) => a.name).join(', ')}`
+        (i) => `${i.track?.name} - ${i.track?.artists.map((a) => a.name).join(', ')}`
       )
       if (songs.length < this.rows * this.cols) {
         console.error('Not enough songs in the playlist')

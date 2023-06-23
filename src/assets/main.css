@@ -30,6 +30,7 @@ body {
 
 .login-box .user-box {
   position: relative;
+  color: #03e9f4;
 }
 
 .login-box .user-box input {

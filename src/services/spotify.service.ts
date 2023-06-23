@@ -1,6 +1,6 @@
 import { Observable, catchError, from, map, mergeMap, of, tap, throwError } from 'rxjs'
 import { SnackbarService } from './snackbar.service'
-
+export const DEFAULT_SONG_LIMIT = 25
 interface PlaylistOptions {
   makeSubPlaylist?: boolean
   playlistSize?: number
@@ -23,10 +23,10 @@ class Spotify {
     client_id: string
     access_token?: string
     expiry?: number
-    user?: 
+    user?: SpotifyApi.UserObjectPrivate
   }
 
-  sessionPlaylists: [] = []
+  sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = []
   constructor() {
     this.sessionPlaylists = JSON.parse(sessionStorage.getItem('playlists') ?? '[]')
     this.userSession = JSON.parse(
@@ -133,7 +133,7 @@ class Spotify {
     }).pipe(
       tap((me) => {
         this.me = me
-        console.log(me)
+        // console.log(me)
       })
     )
   }
@@ -146,16 +146,13 @@ class Spotify {
   fetchPlaylist(
     id: string,
     options: PlaylistOptions = { playlistSize: DEFAULT_SONG_LIMIT }
-  ): Observable<SpotifyPlaylist> {
+  ): Observable<SpotifyApi.PlaylistObjectFull> {
     return this.api(`playlists/${id}`, {
       headers: {
         authorization: `Bearer ${this.access_token}`
       }
     }).pipe(
-      tap((playlist: SpotifyPlaylist) => {
-        console.log(playlist)
-      }),
-      mergeMap((playlist: SpotifyPlaylist) => {
+      mergeMap((playlist) => {
         if (options?.makeSubPlaylist) {
           return this.makeSubPlaylist(playlist, options)
         } else {
@@ -165,16 +162,25 @@ class Spotify {
     )
   }
 
-  fetchPlaybackState() {
+  fetchPlaybackState(): Observable<SpotifyApi.CurrentPlaybackResponse> {
     return this.api(`me/player`, {
       headers: {
         authorization: `Bearer ${this.access_token}`
       }
     }).pipe(
       tap((state) => {
-        console.log(state)
+        // console.log(state)
       })
     )
+  }
+
+  nextTrack() {
+    return this.api(`me/player/next`, {
+      headers: {
+        authorization: `Bearer ${this.access_token}`
+      },
+      method: 'POST'
+    })
   }
 
   /**
@@ -182,7 +188,7 @@ class Spotify {
    * @param songs
    * @returns
    */
-  private shuffle(songs: Track[]) {
+  private shuffle(songs: SpotifyApi.PlaylistTrackObject[]) {
     const shuffledArray = songs.slice()
 
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -199,7 +205,7 @@ class Spotify {
    * @param length The length of the new one
    * @returns
    */
-  makeSubPlaylist(p: SpotifyPlaylist, options: PlaylistOptions): Observable<any> {
+  makeSubPlaylist(p: SpotifyApi.PlaylistObjectFull, options: PlaylistOptions): Observable<any> {
     console.log(options)
     const length = options.playlistSize ?? DEFAULT_SONG_LIMIT
     if (length > p.tracks.items.length) {
@@ -225,12 +231,12 @@ class Spotify {
 
     // Gets the songs already used this session
     const alreadyUsedSongs = this.sessionPlaylists.flatMap((p) =>
-      p.tracks.items.flatMap((t) => t.track.id)
+      p.tracks.items.flatMap((t) => t.track?.id)
     )
 
     // Get the song selection
     const filtered_songs = p.tracks.items.filter(
-      (song) => !alreadyUsedSongs.includes(song.track.id)
+      (song) => !alreadyUsedSongs.includes(song.track?.id)
     )
 
     // Throw an error if the playlists are too similar
@@ -261,10 +267,10 @@ class Spotify {
           },
           body: JSON.stringify(body)
         }).pipe(
-          mergeMap((newPlaylist: SpotifyPlaylist) => {
+          mergeMap((newPlaylist: SpotifyApi.PlaylistObjectFull) => {
             const tracksBody = {
               position: 0,
-              uris: songSelection.map((t) => t.track.uri)
+              uris: songSelection.map((t) => t.track?.uri)
             }
             // Add the songs to the new playlist
             return this.api(`playlists/${newPlaylist.id}/tracks`, {
@@ -314,10 +320,21 @@ class Spotify {
           )
         }
       }),
-      map((response) => JSON.parse(response)),
+      tap((response) => console.log(response)),
+      mergeMap((response) => {
+        if (response.length > 0) {
+          return of(JSON.parse(response))
+        } else {
+          return throwError(() => {
+            return undefined
+          })
+        }
+      }),
       catchError((err) => {
-        console.error(err)
-        this.snack.msgError('API Error', err.message)
+        if (err) {
+          console.error(err)
+          this.snack.msgError('API Error', err.message)
+        }
         return throwError(() => err)
       })
     )
@@ -327,7 +344,7 @@ class Spotify {
     return this.userSession.user ?? undefined
   }
 
-  set me(u: SpotifyUser | undefined) {
+  set me(u: SpotifyApi.UserObjectPrivate | undefined) {
     this.userSession.user = u
     localStorage.setItem('userSession', JSON.stringify(this.userSession))
   }
