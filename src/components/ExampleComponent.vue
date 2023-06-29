@@ -1,27 +1,19 @@
 <template>
   <div>
-    <p>{{ title }}</p>
-    <ul>
-      <li v-for="todo in todos" :key="todo.id" @click="increment">
-        {{ todo.id }} - {{ todo.content }}
-      </li>
-    </ul>
-    <p>Count: {{ todoCount }} / {{ meta.totalCount }}</p>
-    <p>Active: {{ active ? 'yes' : 'no' }}</p>
-    <p>Clicks on todos: {{ clickCount }}</p>
+    Skip timer here
   </div>
 </template>
 
 <script lang="ts">
 import {
-  defineComponent,
-  PropType,
-  computed,
-  ref,
-  toRef,
-  Ref,
+PropType,
+Ref,
+computed,
+defineComponent,
+ref,
+toRef,
 } from 'vue';
-import { Todo, Meta } from './models';
+import { Meta, Todo } from './models';
 
 function useClickCount() {
   const clickCount = ref(0);
