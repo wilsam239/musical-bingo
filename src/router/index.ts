@@ -1,41 +1,36 @@
-import { BingoService } from '@/services/bingo.service'
-import { SpotifyService } from '@/services/spotify.service'
-import { createRouter, createWebHistory } from 'vue-router'
-import BingoView from '../views/BingoView.vue'
+import { route } from 'quasar/wrappers';
+import {
+  createMemoryHistory,
+  createRouter,
+  createWebHashHistory,
+  createWebHistory,
+} from 'vue-router';
 
-const spotify = SpotifyService
-const bingo = BingoService
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'login',
-      component: () => import('../components/LoginForm.vue')
-    },
-    {
-      path: '/config',
-      name: 'config',
-      component: () => import('../components/BingoConfig.vue')
-    },
-    {
-      path: '/bingo',
-      name: 'bingo',
-      component: BingoView
-    },
-    {
-      path: '/dashboard', 
-      name: 'dashboard',
-      component: () => import('../components/BingoRun.vue')
-    }
-  ]
-})
+import routes from './routes';
 
-router.beforeEach(async (to, from) => {
-  if (to.name === 'config' && !spotify.isLoggedIn) {
-    return { name: 'login' }
-  } else if (to.name === 'bingo' && !bingo.isPopulated) {
-    return { name: 'login' }
-  }
-})
-export default router
+/*
+ * If not building with SSR mode, you can
+ * directly export the Router instantiation;
+ *
+ * The function below can be async too; either use
+ * async/await or return a Promise which resolves
+ * with the Router instance.
+ */
+
+export default route(function (/* { store, ssrContext } */) {
+  const createHistory = process.env.SERVER
+    ? createMemoryHistory
+    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory);
+
+  const Router = createRouter({
+    scrollBehavior: () => ({ left: 0, top: 0 }),
+    routes,
+
+    // Leave this as is and make changes in quasar.conf.js instead!
+    // quasar.conf.js -> build -> vueRouterMode
+    // quasar.conf.js -> build -> publicPath
+    history: createHistory(process.env.VUE_ROUTER_BASE),
+  });
+
+  return Router;
+});
