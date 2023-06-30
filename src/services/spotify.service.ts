@@ -36,10 +36,12 @@ class Spotify {
   };
 
   sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = [];
+  sessionPlayed: SpotifyApi.TrackObjectFull[] = [];
   constructor() {
     this.sessionPlaylists = JSON.parse(
       sessionStorage.getItem('playlists') ?? '[]'
     );
+    this.sessionPlayed = JSON.parse(sessionStorage.getItem('played') ?? '[]');
     this.userSession = JSON.parse(
       localStorage.getItem('userSession') ??
         JSON.stringify({
@@ -406,6 +408,12 @@ class Spotify {
       !!this.userSession.expiry &&
       this.userSession.expiry > Date.now()
     );
+  }
+
+  addSongToPlayed(song: SpotifyApi.TrackObjectFull) {
+    if (this.sessionPlayed.at(-1) !== song) {
+      this.sessionPlayed.push(song);
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 <template>
   <q-layout view="hHh lpR lFr">
+    import NowPlaying from 'src/components/NowPlaying.vue'
 
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
@@ -7,7 +8,7 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
           Client Name
         </q-toolbar-title>
@@ -34,36 +35,33 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          <div>Now Playing</div>
+          <now-playing></now-playing>
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
-
   </q-layout>
 </template>
 
 <script>
-import { ref } from 'vue'
-
+import { onMounted, ref } from 'vue';
 
 export default {
   setup() {
-    const leftDrawerOpen = ref(false)
-    const rightDrawerOpen = ref(false)
-
+    const leftDrawerOpen = ref(false);
+    const rightDrawerOpen = ref(false);
     return {
       leftDrawerOpen,
       toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value
+        leftDrawerOpen.value = !leftDrawerOpen.value;
       },
-
       rightDrawerOpen,
       toggleRightDrawer() {
-        rightDrawerOpen.value = !rightDrawerOpen.value
-      }
-    }
-  }
-}
+        rightDrawerOpen.value = !rightDrawerOpen.value;
+      },
+    };
+  },
+  components: { NowPlaying },
+};
 </script>
