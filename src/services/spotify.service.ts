@@ -146,11 +146,7 @@ class Spotify {
    * Get the users info from the /me endpoint
    */
   fetchMe() {
-    return this.api('me', {
-      headers: {
-        authorization: `Bearer ${this.access_token}`,
-      },
-    }).pipe(
+    return this.api('me').pipe(
       tap((me) => {
         this.me = me;
         // console.log(me)
@@ -167,11 +163,7 @@ class Spotify {
     id: string,
     options: PlaylistOptions = { playlistSize: DEFAULT_SONG_LIMIT }
   ): Observable<SpotifyApi.PlaylistObjectFull> {
-    return this.api(`playlists/${id}`, {
-      headers: {
-        authorization: `Bearer ${this.access_token}`,
-      },
-    }).pipe(
+    return this.api(`playlists/${id}`).pipe(
       mergeMap((playlist) => {
         if (options?.makeSubPlaylist) {
           return this.makeSubPlaylist(playlist, options);
@@ -183,11 +175,7 @@ class Spotify {
   }
 
   fetchPlaybackState(): Observable<SpotifyApi.CurrentPlaybackResponse> {
-    return this.api('me/player', {
-      headers: {
-        authorization: `Bearer ${this.access_token}`,
-      },
-    }).pipe(
+    return this.api('me/player').pipe(
       tap((state) => {
         // console.log(state)
       })
@@ -196,9 +184,6 @@ class Spotify {
 
   nextTrack() {
     return this.api('me/player/next', {
-      headers: {
-        authorization: `Bearer ${this.access_token}`,
-      },
       method: 'POST',
     });
   }
@@ -290,9 +275,6 @@ class Spotify {
       mergeMap(() =>
         this.api(`users/${this.me!.id}/playlists`, {
           method: 'POST',
-          headers: {
-            authorization: `Bearer ${this.access_token}`,
-          },
           body: JSON.stringify(body),
         }).pipe(
           mergeMap((newPlaylist: SpotifyApi.PlaylistObjectFull) => {
@@ -303,9 +285,6 @@ class Spotify {
             // Add the songs to the new playlist
             return this.api(`playlists/${newPlaylist.id}/tracks`, {
               method: 'POST',
-              headers: {
-                authorization: `Bearer ${this.access_token}`,
-              },
               body: JSON.stringify(tracksBody),
             }).pipe(
               mergeMap(() => {
@@ -336,7 +315,19 @@ class Spotify {
    */
   private api(_url: string, init?: RequestInit) {
     const url = _url.startsWith('https://') ? _url : this.url + _url;
-    return from(fetch(url, init)).pipe(
+
+    let updatedInit: { [key: string]: any } = init ?? ({} as any);
+    const headers = updatedInit.headers ?? {};
+    if (!init || !headers.authorization) {
+      updatedInit = {
+        ...updatedInit,
+        headers: {
+          ...headers,
+          authorization: `Bearer ${this.access_token}`,
+        },
+      };
+    }
+    return from(fetch(url, updatedInit)).pipe(
       mergeMap((response) => {
         if (response.status < 400) {
           return response.text();
