@@ -100,7 +100,7 @@ class Spotify {
     params.append('response_type', 'code');
     params.append(
       'redirect_uri',
-      `${location.protocol}//${location.host}/musical-bingo/`
+      `${location.protocol}//${location.host}/login`
     );
     params.append('scope', SCOPE.join(' '));
     params.append('code_challenge_method', 'S256');
@@ -122,7 +122,7 @@ class Spotify {
     params.append('code', code);
     params.append(
       'redirect_uri',
-      `${location.protocol}//${location.host}/musical-bingo/`
+      `${location.protocol}//${location.host}/login`
     );
     params.append('code_verifier', verifier!);
 

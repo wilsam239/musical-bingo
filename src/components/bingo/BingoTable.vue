@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { BingoService } from '../services/bingo.service'
+import { BingoService } from '../../services/bingo.service';
 
-const bs = BingoService
+const bs = BingoService;
 interface BingoTableProps {
-  index: number
+  index: number;
 }
 
-const props = defineProps<BingoTableProps>()
+const props = defineProps<BingoTableProps>();
 </script>
 <template>
   <div id="content">
