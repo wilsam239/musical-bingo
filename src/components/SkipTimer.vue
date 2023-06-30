@@ -5,30 +5,11 @@
 </template>
 
 <script lang="ts">
-import {
-PropType,
-Ref,
-computed,
-defineComponent,
-ref,
-toRef,
-} from 'vue';
-import { Meta, Todo } from './models';
+import { Meta } from 'quasar';
+import { of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { defineComponent, PropType, toRef } from 'vue';
 
-function useClickCount() {
-  const clickCount = ref(0);
-  function increment() {
-    clickCount.value += 1
-    return clickCount.value;
-  }
-
-  return { clickCount, increment };
-}
-
-function useDisplayTodo(todos: Ref<Todo[]>) {
-  const todoCount = computed(() => todos.value.length);
-  return { todoCount };
-}
 
 export default defineComponent({
   name: 'ExampleComponent',
