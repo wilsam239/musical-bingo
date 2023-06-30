@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref } from 'vue';
 import { SpotifyService } from '../../services/spotify.service';
 
 const spotify = SpotifyService;
@@ -26,5 +26,8 @@ onMounted(() => {
 });
 </script>
 <template>
+  <q-avatar>
+    <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+  </q-avatar>
   <div>{{ currentSong }}</div>
 </template>

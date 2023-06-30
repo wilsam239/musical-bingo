@@ -351,7 +351,7 @@ class Spotify {
           );
         }
       }),
-      tap((response) => console.log(response)),
+      // tap((response) => console.log(response)),
       mergeMap((response) => {
         if (response.length > 0) {
           return of(JSON.parse(response));
@@ -411,8 +411,14 @@ class Spotify {
   }
 
   addSongToPlayed(song: SpotifyApi.TrackObjectFull) {
-    if (this.sessionPlayed.at(-1) !== song) {
+    const lastSong = this.sessionPlayed.at(-1);
+    if (!lastSong || lastSong.id !== song.id) {
+      console.info(`Added ${song.name} to the recently played songs`);
       this.sessionPlayed.push(song);
+      window.sessionStorage.setItem(
+        'played',
+        JSON.stringify(this.sessionPlayed)
+      );
     }
   }
 }

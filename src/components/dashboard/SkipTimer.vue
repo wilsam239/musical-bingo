@@ -2,7 +2,7 @@
   <div>Skip timer here</div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { Meta } from 'quasar';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
