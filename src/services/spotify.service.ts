@@ -159,7 +159,21 @@ class Spotify {
   }
 
   fetchPlaylists() {
-    return this.api(`users/${this.me!.id}/playlists`);
+    const items: SpotifyApi.PlaylistObjectSimplified[] = [];
+    const getNext = (u = `users/${this.me!.id}/playlists`): Observable<any> => {
+      return this.api(u).pipe(
+        mergeMap((response: SpotifyApi.ListOfUsersPlaylistsResponse) => {
+          items.push(...response.items);
+          return response.next ? getNext(response.next) : of(response);
+        })
+      );
+    };
+
+    return getNext().pipe(
+      map(() => {
+        return items;
+      })
+    );
   }
 
   /**

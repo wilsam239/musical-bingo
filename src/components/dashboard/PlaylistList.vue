@@ -2,29 +2,27 @@
 import { map } from 'rxjs/internal/operators/map';
 import { tap } from 'rxjs/internal/operators/tap';
 import { SpotifyService } from 'src/services/spotify.service';
-import { defineComponent, onMounted } from 'vue';
+import { Ref, defineComponent, onMounted, ref } from 'vue';
 
 // const spotify = SpotifyService;
 
-const playlists = ['Playlist 1', 'Playlist 2'];
+const playlists: Ref<SpotifyApi.PlaylistObjectSimplified[]> = ref([]);
+const playlistFilter = ref('');
 const spotify = SpotifyService;
 onMounted(() => {
-  console.log('Playlists mounted');
   spotify
     .fetchPlaylists()
     .pipe(
-      map((resp) => {
-        return resp.items;
-      }),
-      tap((playlists: SpotifyApi.PlaylistObjectFull) => {
-        console.log(playlists);
+      tap((playlistsFound) => {
+        playlists.value = playlistsFound;
       })
     )
     .subscribe();
 });
 </script>
 <template>
-  <div v-for="playlist of playlists" v-bind:key="playlist">
-    {{ playlist }}
+  <q-input square outlined v-model="playlistFilter" label="Filter Playlists" />
+  <div v-for="playlist of playlists" v-bind:key="playlist.id">
+    {{ playlist.name }}
   </div>
 </template>

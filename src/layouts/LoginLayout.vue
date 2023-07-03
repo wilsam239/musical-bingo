@@ -72,7 +72,12 @@ watch(clientID, (val) => {
         </q-card-section>
 
         <q-card-section>
-          <q-input square outlined v-model="clientID" label="Square outlined" />
+          <q-input
+            square
+            outlined
+            v-model="clientID"
+            label="Spotify Web App Client ID"
+          />
         </q-card-section>
 
         <q-separator />
