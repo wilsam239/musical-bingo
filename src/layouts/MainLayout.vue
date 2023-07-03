@@ -13,6 +13,7 @@
           Expires In {{ expiresIn }} Minutes
         </q-toolbar-title>
 
+        <q-btn dense flat round icon="refresh" @click="refreshToken" />
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>
@@ -59,6 +60,9 @@ function toggleRightDrawer() {
   rightDrawerOpen.value = !rightDrawerOpen.value;
 }
 
+function refreshToken() {
+  spotify.refreshToken().subscribe();
+}
 onMounted(() => {
   setInterval(() => {
     expiresIn.value = Math.round((spotify.expiry - Date.now()) / 1000 / 60);

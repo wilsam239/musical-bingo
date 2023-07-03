@@ -335,12 +335,16 @@ class Spotify {
    * @param init The request headers, body, and auth
    * @returns
    */
-  private api(_url: string, init?: RequestInit) {
+  private api(_url: string, init?: RequestInit, forceNoAuth = false) {
     const url = _url.startsWith('https://') ? _url : this.url + _url;
 
     let updatedInit: { [key: string]: any } = init ?? ({} as any);
     const headers = updatedInit.headers ?? {};
-    if ((!init || !headers.authorization) && this.access_token) {
+    if (
+      (!init || !headers.authorization) &&
+      this.access_token &&
+      !forceNoAuth
+    ) {
       updatedInit = {
         ...updatedInit,
         headers: {
@@ -351,33 +355,28 @@ class Spotify {
     }
     const request: Observable<any> = from(fetch(url, updatedInit)).pipe(
       mergeMap((response) => {
-        if (response.status < 400) {
-          return response.text();
-        } else {
-          return from(response.text()).pipe(
-            map((body) => JSON.parse(body)),
-            mergeMap((body) => {
-              return throwError(() => {
-                return { title: body.error, message: body.error_description };
-              });
-            })
-          );
-        }
-      }),
-      // tap((response) => console.log(response)),
-      mergeMap((response) => {
-        if (response.length > 0) {
-          return of(JSON.parse(response));
-        } else {
-          return throwError(() => {
-            return undefined;
-          });
-        }
+        return from(response.text()).pipe(
+          mergeMap((body) => {
+            if (response.status < 400) {
+              return of(body);
+            } else {
+              return throwError(() => JSON.parse(body));
+            }
+          }),
+          map((body) => {
+            if (body.length > 0) {
+              return JSON.parse(body);
+            } else {
+              return { items: [] };
+            }
+          })
+        );
       }),
       catchError((err) => {
         if (err && err.status === 401) {
           return this.refreshToken().pipe(
             mergeMap(() => {
+              err = false;
               return request;
             })
           );
@@ -403,13 +402,17 @@ class Spotify {
     params.append('grant_type', 'refresh_token');
     params.append('refresh_token', this.refresh_token);
 
-    return this.api('https://accounts.spotify.com/api/token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+    return this.api(
+      'https://accounts.spotify.com/api/token',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
       },
-      body: params,
-    }).pipe(
+      true
+    ).pipe(
       tap((response) => {
         console.log('Token refreshed!');
         console.log(response);
