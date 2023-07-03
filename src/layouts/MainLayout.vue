@@ -10,7 +10,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          Client Name
+          Expires In {{ expiresIn }} Minutes
         </q-toolbar-title>
 
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
@@ -45,8 +45,11 @@
 import NowPlaying from 'src/components/dashboard/NowPlaying.vue';
 import PlaylistList from 'src/components/dashboard/PlaylistList.vue';
 import RecentlyPlayed from 'src/components/dashboard/RecentlyPlayed.vue';
+import { SpotifyService } from 'src/services/spotify.service';
 import { onMounted, ref } from 'vue';
 
+const spotify = SpotifyService;
+const expiresIn = ref(0);
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
 function toggleLeftDrawer() {
@@ -55,4 +58,10 @@ function toggleLeftDrawer() {
 function toggleRightDrawer() {
   rightDrawerOpen.value = !rightDrawerOpen.value;
 }
+
+onMounted(() => {
+  setInterval(() => {
+    expiresIn.value = Math.round((spotify.expiry - Date.now()) / 1000 / 60);
+  }, 5000);
+});
 </script>

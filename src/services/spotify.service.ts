@@ -20,6 +20,8 @@ interface PlaylistOptions {
 const SCOPE = [
   'user-read-private',
   'user-read-email',
+  'playlist-read-private',
+  'playlist-read-collaborative',
   'playlist-modify-public',
   'playlist-modify-private',
   'user-read-playback-state',
@@ -31,6 +33,7 @@ class Spotify {
   private userSession: {
     client_id: string;
     access_token?: string;
+    refresh_token?: string;
     expiry?: number;
     user?: SpotifyApi.UserObjectPrivate;
   };
@@ -136,6 +139,7 @@ class Spotify {
       tap((response) => {
         console.log(response);
         this.access_token = response.access_token;
+        this.refresh_token = response.refresh_token;
         this.expiry = response.expires_in;
       }),
       mergeMap(() => this.fetchMe())
@@ -152,6 +156,10 @@ class Spotify {
         // console.log(me)
       })
     );
+  }
+
+  fetchPlaylists() {
+    return this.api(`users/${this.me!.id}/playlists`);
   }
 
   /**
@@ -318,7 +326,7 @@ class Spotify {
 
     let updatedInit: { [key: string]: any } = init ?? ({} as any);
     const headers = updatedInit.headers ?? {};
-    if (!init || !headers.authorization) {
+    if ((!init || !headers.authorization) && this.access_token) {
       updatedInit = {
         ...updatedInit,
         headers: {
@@ -327,7 +335,7 @@ class Spotify {
         },
       };
     }
-    return from(fetch(url, updatedInit)).pipe(
+    const request: Observable<any> = from(fetch(url, updatedInit)).pipe(
       mergeMap((response) => {
         if (response.status < 400) {
           return response.text();
@@ -353,12 +361,49 @@ class Spotify {
         }
       }),
       catchError((err) => {
+        if (err && err.status === 401) {
+          return this.refreshToken().pipe(
+            mergeMap(() => {
+              return request;
+            })
+          );
+        }
         if (err) {
           console.error(err);
           this.snack.msgError('API Error', err.message);
         }
+        if (!err) {
+          return of(err);
+        }
         return throwError(() => err);
       })
+    );
+
+    return request;
+  }
+
+  refreshToken() {
+    console.log('Refreshing token');
+    const params = new URLSearchParams();
+    params.append('client_id', this.clientID);
+    params.append('grant_type', 'refresh_token');
+    params.append('refresh_token', this.refresh_token);
+
+    return this.api('https://accounts.spotify.com/api/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params,
+    }).pipe(
+      tap((response) => {
+        console.log('Token refreshed!');
+        console.log(response);
+        this.access_token = response.access_token;
+        this.refresh_token = response.refresh_token;
+        this.expiry = response.expires_in;
+      }),
+      mergeMap(() => this.fetchMe())
     );
   }
 
@@ -380,6 +425,9 @@ class Spotify {
     localStorage.setItem('userSession', JSON.stringify(this.userSession));
   }
 
+  get expiry() {
+    return this.userSession.expiry ?? 0;
+  }
   set expiry(expires_in: number) {
     this.userSession.expiry = Date.now() + expires_in * 1000;
     localStorage.setItem('userSession', JSON.stringify(this.userSession));
@@ -393,12 +441,26 @@ class Spotify {
     return this.userSession.access_token ?? '';
   }
 
+  set refresh_token(at: string) {
+    this.userSession.refresh_token = at;
+    localStorage.setItem('userSession', JSON.stringify(this.userSession));
+  }
+
+  get refresh_token() {
+    return this.userSession.refresh_token ?? '';
+  }
+
   get isLoggedIn() {
-    return (
+    const loggedIn =
       !!this.userSession.access_token &&
       !!this.userSession.expiry &&
-      this.userSession.expiry > Date.now()
-    );
+      this.userSession.expiry > Date.now();
+
+    if (!loggedIn && !!this.access_token) {
+      this.access_token = '';
+    }
+
+    return loggedIn;
   }
 
   addSongToPlayed(song: SpotifyApi.TrackObjectFull) {
