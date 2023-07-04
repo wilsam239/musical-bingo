@@ -208,6 +208,11 @@ class Spotify {
     );
   }
 
+  scrubToSeconds(seconds: number) {
+    // TODO Implement this
+    return of(true);
+  }
+
   nextTrack() {
     return this.api('me/player/next', {
       method: 'POST',
@@ -427,7 +432,7 @@ class Spotify {
 
   /**
    * Actions after login and a successful token response has been returned
-   * @param response 
+   * @param response
    */
   private postLogin(response: TokenResponse) {
     this.access_token = response.access_token;

@@ -29,7 +29,7 @@
     </q-drawer>
 
     <q-page-container>
-      <router-view />
+      <playback-updater></playback-updater>
     </q-page-container>
 
     <q-footer elevated class="bg-grey-8 text-white">
@@ -44,6 +44,7 @@
 
 <script setup lang="ts">
 import NowPlaying from 'src/components/dashboard/NowPlaying.vue';
+import PlaybackUpdater from 'src/components/dashboard/PlaybackUpdater.vue';
 import PlaylistList from 'src/components/dashboard/PlaylistList.vue';
 import RecentlyPlayed from 'src/components/dashboard/RecentlyPlayed.vue';
 import { SpotifyService } from 'src/services/spotify.service';
