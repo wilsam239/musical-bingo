@@ -10,6 +10,13 @@ import {
 } from 'rxjs';
 import { SnackbarService } from './snackbar.service';
 export const DEFAULT_SONG_LIMIT = 25;
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  refresh_token: string;
+  expires_in: number;
+  scope: string;
+}
 interface PlaylistOptions {
   makeSubPlaylist?: boolean;
   playlistSize?: number;
@@ -136,11 +143,8 @@ class Spotify {
       },
       body: params,
     }).pipe(
-      tap((response) => {
-        console.log(response);
-        this.access_token = response.access_token;
-        this.refresh_token = response.refresh_token;
-        this.expiry = response.expires_in;
+      tap((response: TokenResponse) => {
+        this.postLogin(response);
       }),
       mergeMap(() => this.fetchMe())
     );
@@ -413,15 +417,22 @@ class Spotify {
       },
       true
     ).pipe(
-      tap((response) => {
+      tap((response: TokenResponse) => {
         console.log('Token refreshed!');
-        console.log(response);
-        this.access_token = response.access_token;
-        this.refresh_token = response.refresh_token;
-        this.expiry = response.expires_in;
+        this.postLogin(response);
       }),
       mergeMap(() => this.fetchMe())
     );
+  }
+
+  /**
+   * Actions after login and a successful token response has been returned
+   * @param response 
+   */
+  private postLogin(response: TokenResponse) {
+    this.access_token = response.access_token;
+    this.refresh_token = response.refresh_token;
+    this.expiry = response.expires_in;
   }
 
   get me() {
