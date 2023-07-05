@@ -209,6 +209,9 @@ class Spotify {
   }
 
   scrubToSeconds(seconds: number) {
+    return this.api(`me/player/seek?position_ms=${seconds * 1000}`, {
+      method: 'PUT',
+    });
     // TODO Implement this
     return of(true);
   }
@@ -216,6 +219,12 @@ class Spotify {
   nextTrack() {
     return this.api('me/player/next', {
       method: 'POST',
+    });
+  }
+
+  pause() {
+    return this.api('me/player/pause', {
+      method: 'PUT',
     });
   }
 

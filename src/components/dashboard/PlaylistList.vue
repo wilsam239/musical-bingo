@@ -22,7 +22,73 @@ onMounted(() => {
 </script>
 <template>
   <q-input square outlined v-model="playlistFilter" label="Filter Playlists" />
-  <div v-for="playlist of playlists" v-bind:key="playlist.id">
-    {{ playlist.name }}
-  </div>
+  <q-list bordered class="rounded-borders">
+    <q-item clickable v-ripple>
+      <q-item-section avatar>
+        <q-avatar
+          rounded
+          color="green"
+          text-color="white"
+          icon="add"
+          size="48px"
+        />
+      </q-item-section>
+      <q-item-section>
+        <q-item-label>
+          <span class="text-weight-medium"> Add New Playlist </span>
+        </q-item-label>
+      </q-item-section>
+    </q-item>
+    <q-item v-for="playlist of playlists" v-bind:key="playlist.id">
+      <q-avatar rounded class="q-mr-md">
+        <img :src="playlist.images.at(0)?.url" />
+      </q-avatar>
+
+      <q-item-section>
+        <q-item-label lines="1">
+          <span class="text-weight-medium">
+            <q-tooltip>{{ playlist.name }}</q-tooltip>
+            {{ playlist.name }}
+          </span>
+        </q-item-label>
+        <q-item-label lines="1">
+          <span class="text-grey-8">
+            <q-tooltip>{{ playlist.description }}</q-tooltip>
+            {{ playlist.description }}
+          </span>
+        </q-item-label>
+      </q-item-section>
+
+      <q-item-section side>
+        <div class="text-grey-8 q-gutter-xs">
+          <q-btn size="12px" flat dense round icon="more_vert">
+            <q-menu auto-close>
+              <q-list>
+                <q-item clickable>
+                  <q-item-section avatar>
+                    <q-icon name="note_add"></q-icon>
+                  </q-item-section>
+                  <q-item-section>Create Bingo Cards</q-item-section>
+                </q-item>
+                <q-item clickable>
+                  <q-item-section avatar>
+                    <q-icon name="preview"></q-icon>
+                  </q-item-section>
+                  <q-item-section>View</q-item-section>
+                </q-item>
+                <!-- <q-item clickable>
+                  <q-item-section avatar>
+                    <q-icon name="play_arrow"></q-icon>
+                  </q-item-section>
+                  <q-item-section>Start Playback</q-item-section>
+                </q-item> -->
+              </q-list>
+            </q-menu>
+          </q-btn>
+        </div>
+      </q-item-section>
+    </q-item>
+
+    <q-separator spaced />
+  </q-list>
 </template>
