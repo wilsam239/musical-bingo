@@ -29,7 +29,7 @@
     </q-drawer>
 
     <q-page-container>
-      <playback-updater></playback-updater>
+      <router-view></router-view>
     </q-page-container>
 
     <q-footer elevated class="bg-grey-8 text-white">

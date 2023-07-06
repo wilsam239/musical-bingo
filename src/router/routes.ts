@@ -1,3 +1,4 @@
+import PlaylistViewerVue from 'src/components/dashboard/PlaylistViewer.vue';
 import { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
@@ -14,6 +15,13 @@ const routes: RouteRecordRaw[] = [
     path: '/dashboard',
     name: 'dashboard',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: ':id',
+        name: 'dashboard_playlists',
+        component: PlaylistViewerVue,
+      },
+    ],
   },
   {
     path: '/bingo/:id',

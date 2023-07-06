@@ -200,6 +200,33 @@ class Spotify {
     );
   }
 
+  fetchPlaylistTracks(playlist: SpotifyApi.PlaylistObjectFull) {
+    const getTracks = (items: SpotifyApi.PlaylistTrackObject[]) => {
+      return items.filter((i) => i.track).map((i) => i.track!);
+    };
+    const items: SpotifyApi.TrackObjectFull[] = getTracks(
+      playlist.tracks.items
+    );
+    const getNext = (u = playlist.tracks.next): Observable<any> => {
+      if (u) {
+        return this.api(u).pipe(
+          mergeMap((response: SpotifyApi.PlaylistTrackResponse) => {
+            items.push(...getTracks(response.items));
+            return response.next ? getNext(response.next) : of(response);
+          })
+        );
+      } else {
+        return of('');
+      }
+    };
+
+    return getNext().pipe(
+      map(() => {
+        return items;
+      })
+    );
+  }
+
   fetchPlaybackState(): Observable<SpotifyApi.CurrentPlaybackResponse> {
     return this.api('me/player').pipe(
       tap((state) => {

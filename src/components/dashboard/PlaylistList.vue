@@ -44,6 +44,7 @@ onMounted(() => {
       v-bind:key="playlist.id"
       clickable
       v-ripple
+      :to="playlist.id"
     >
       <q-avatar rounded class="q-mr-md">
         <img :src="playlist.images.at(0)?.url" />
@@ -93,7 +94,5 @@ onMounted(() => {
         </div>
       </q-item-section>
     </q-item>
-
-    <q-separator spaced />
   </q-list>
 </template>
