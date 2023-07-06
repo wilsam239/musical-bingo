@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { SpotifyService } from 'src/services/spotify.service';
-import { defineComponent, onMounted, ref } from 'vue';
+import { Ref, defineComponent, onMounted, ref, watch } from 'vue';
 import SongList from './SongList.vue';
 
 const spotify = SpotifyService;
 
-const tracks = ref([]);
+const tracks: Ref<SpotifyApi.TrackObjectFull[]> = ref([]);
 const songFilter = ref('');
 </script>
 <template>

@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { Ref, computed, defineComponent, onMounted, ref } from 'vue';
+import { Ref, computed, defineComponent, onMounted, reactive, ref } from 'vue';
 import { SpotifyService } from '../../services/spotify.service';
 import PlaybackUpdater from './PlaybackUpdater.vue';
 
 const spotify = SpotifyService;
 
-let song: SpotifyApi.TrackObjectFull | undefined = undefined;
+let song:
+  | SpotifyApi.TrackObjectFull
+  | { name: string; artists: [{ name: string }] } = reactive({
+  name: 'NA',
+  artists: [{ name: 'NA' }],
+});
 
-const currentSong = ref('No Song Playing');
 const artists = ref('No Artist Information');
 
 function getCurrentSong() {
@@ -16,7 +20,6 @@ function getCurrentSong() {
     .subscribe((resp: SpotifyApi.CurrentPlaybackResponse): void => {
       if (resp && resp.item && resp.item.type == 'track') {
         song = resp.item;
-        currentSong.value = song.name;
         artists.value = song.artists.map((a) => a.name).join(', ');
         spotify.addSongToPlayed(resp.item);
       }
@@ -37,7 +40,7 @@ onMounted(() => {
       </q-avatar>
       <div class="column">
         <div lines="1">
-          <span class="text-weight-medium">{{ currentSong }}</span>
+          <span class="text-weight-medium">{{ song?.name }}</span>
         </div>
         <div>
           <span class="text-grey-8">{{ artists }}</span>

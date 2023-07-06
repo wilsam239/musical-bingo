@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { SpotifyService } from 'src/services/spotify.service';
-import { defineComponent, onMounted, ref } from 'vue';
+import { Ref, defineComponent, mergeProps, onMounted, ref, watch } from 'vue';
 
 const spotify = SpotifyService;
 
-defineProps<{
+const props = defineProps<{
   songs: SpotifyApi.TrackObjectFull[];
 }>();
 </script>
