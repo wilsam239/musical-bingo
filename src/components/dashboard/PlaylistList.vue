@@ -68,7 +68,14 @@ onMounted(() => {
 
       <q-item-section side>
         <div class="text-grey-8 q-gutter-xs">
-          <q-btn size="12px" flat dense round icon="more_vert">
+          <q-btn
+            size="12px"
+            flat
+            dense
+            round
+            icon="more_vert"
+            v-on:click.prevent
+          >
             <q-menu auto-close>
               <q-list>
                 <q-item clickable>
@@ -77,12 +84,12 @@ onMounted(() => {
                   </q-item-section>
                   <q-item-section>Create Bingo Cards</q-item-section>
                 </q-item>
-                <q-item clickable>
+                <!-- <q-item clickable>
                   <q-item-section avatar>
                     <q-icon name="preview"></q-icon>
                   </q-item-section>
                   <q-item-section>View</q-item-section>
-                </q-item>
+                </q-item> -->
                 <!-- <q-item clickable>
                   <q-item-section avatar>
                     <q-icon name="play_arrow"></q-icon>

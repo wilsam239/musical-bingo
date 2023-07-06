@@ -416,7 +416,7 @@ class Spotify {
         },
       };
     }
-    const request: Observable<any> = from(fetch(url, updatedInit)).pipe(
+    return from(fetch(url, updatedInit)).pipe(
       mergeMap((response) => {
         return from(response.text()).pipe(
           mergeMap((body) => {
@@ -436,14 +436,6 @@ class Spotify {
         );
       }),
       catchError((err) => {
-        if (err && err.status === 401) {
-          return this.refreshToken().pipe(
-            mergeMap(() => {
-              err = false;
-              return request;
-            })
-          );
-        }
         if (err) {
           console.error(err);
           this.snack.msgError('API Error', err.message);
@@ -454,8 +446,6 @@ class Spotify {
         return throwError(() => err);
       })
     );
-
-    return request;
   }
 
   refreshToken() {
