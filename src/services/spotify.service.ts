@@ -1,4 +1,5 @@
 import {
+  BehaviorSubject,
   Observable,
   catchError,
   from,
@@ -34,6 +35,11 @@ const SCOPE = [
   'user-read-playback-state',
   'user-modify-playback-state',
 ];
+
+class ACTIONS {
+  static FETCH_PLAYLISTS = 'fetch_playlists';
+  static FETCH_TRACKS = 'fetch_tracks';
+}
 class Spotify {
   private snack = SnackbarService;
   private url = 'https://api.spotify.com/v1/';
@@ -47,6 +53,10 @@ class Spotify {
 
   sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = [];
   sessionPlayed: SpotifyApi.TrackObjectFull[] = [];
+
+  loadingState = new BehaviorSubject(true);
+
+  private actions: Set<string> = new Set();
   constructor() {
     this.sessionPlaylists = JSON.parse(
       sessionStorage.getItem('playlists') ?? '[]'
@@ -163,6 +173,7 @@ class Spotify {
   }
 
   fetchPlaylists() {
+    this.actions.add(ACTIONS.FETCH_PLAYLISTS);
     const items: SpotifyApi.PlaylistObjectSimplified[] = [];
     const getNext = (u = `users/${this.me!.id}/playlists`): Observable<any> => {
       return this.api(u).pipe(
@@ -174,6 +185,9 @@ class Spotify {
     };
 
     return getNext().pipe(
+      tap(() => {
+        this.actions.delete(ACTIONS.FETCH_PLAYLISTS);
+      }),
       map(() => {
         return items;
       })
@@ -201,6 +215,7 @@ class Spotify {
   }
 
   fetchPlaylistTracks(playlist: SpotifyApi.PlaylistObjectFull) {
+    this.actions.add(ACTIONS.FETCH_TRACKS);
     const getTracks = (items: SpotifyApi.PlaylistTrackObject[]) => {
       return items.filter((i) => i.track).map((i) => i.track!);
     };
@@ -221,6 +236,9 @@ class Spotify {
     };
 
     return getNext().pipe(
+      tap(() => {
+        this.actions.delete(ACTIONS.FETCH_TRACKS);
+      }),
       map(() => {
         return items;
       })
@@ -541,6 +559,18 @@ class Spotify {
         'played',
         JSON.stringify(this.sessionPlayed)
       );
+    }
+  }
+
+  get loading() {
+    return this.loadingState.getValue();
+  }
+
+  set loading(v: boolean) {
+    if (this.actions.size === 0 || v) {
+      this.loadingState.next(v);
+    } else {
+      console.log('Still stuff loading, hold your horses');
     }
   }
 }

@@ -15,6 +15,7 @@ onMounted(() => {
     .pipe(
       tap((playlistsFound) => {
         playlists.value = playlistsFound;
+        spotify.loading = false;
       })
     )
     .subscribe();
@@ -44,7 +45,7 @@ onMounted(() => {
       v-bind:key="playlist.id"
       clickable
       v-ripple
-      :to="playlist.id"
+      :to="'/dashboard/' + playlist.id"
     >
       <q-avatar rounded class="q-mr-md">
         <img :src="playlist.images.at(0)?.url" />

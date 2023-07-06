@@ -32,13 +32,21 @@ onMounted(() => {
   }, 5000);
 });
 </script>
+<style>
+.now-playing-details {
+  /* max-width: 300px; */
+}
+</style>
 <template>
   <div class="row justify-between">
     <div class="row">
-      <q-avatar rounded class="q-mr-md" size="lg">
-        <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
-      </q-avatar>
-      <div class="column">
+      <div class="column justify-center">
+        <q-avatar rounded class="q-mr-md" size="lg">
+          <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+        </q-avatar>
+      </div>
+      <!-- <marquee behavior="scroll" direction="left" scrollamount="2"> -->
+      <div class="column now-playing-details">
         <div lines="1">
           <span class="text-weight-medium">{{ song?.name }}</span>
         </div>
@@ -46,15 +54,14 @@ onMounted(() => {
           <span class="text-grey-8">{{ artists }}</span>
         </div>
       </div>
+      <!-- </marquee> -->
     </div>
-    <div>
-      <div>
-        <q-btn size="lg" flat dense round icon="settings">
-          <q-menu>
-            <playback-updater></playback-updater>
-          </q-menu>
-        </q-btn>
-      </div>
+    <div class="column justify-center">
+      <q-btn size="lg" flat dense round icon="settings">
+        <q-menu>
+          <playback-updater></playback-updater>
+        </q-menu>
+      </q-btn>
     </div>
   </div>
 </template>

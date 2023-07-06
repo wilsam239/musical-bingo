@@ -37,10 +37,19 @@
         </q-toolbar-title>
       </q-toolbar>
     </q-footer>
+
+    <q-inner-loading
+      :showing="loading"
+      label="Loading..."
+      label-class="text-teal"
+      label-style="font-size: 2em"
+      size="lg"
+    />
   </q-layout>
 </template>
 
 <script setup lang="ts">
+import { tap } from 'rxjs/operators';
 import NowPlaying from 'src/components/dashboard/NowPlaying.vue';
 import PlaybackUpdater from 'src/components/dashboard/PlaybackUpdater.vue';
 import PlaylistList from 'src/components/dashboard/PlaylistList.vue';
@@ -52,6 +61,9 @@ const spotify = SpotifyService;
 const expiresIn = ref(0);
 const leftDrawerOpen = ref(false);
 const rightDrawerOpen = ref(false);
+
+const loading = ref(false);
+
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
@@ -63,6 +75,13 @@ function refreshToken() {
   spotify.refreshToken().subscribe();
 }
 onMounted(() => {
+  spotify.loadingState
+    .pipe(
+      tap((l) => {
+        loading.value = l;
+      })
+    )
+    .subscribe();
   setInterval(() => {
     expiresIn.value = Math.round((spotify.expiry - Date.now()) / 1000 / 60);
   }, 5000);
