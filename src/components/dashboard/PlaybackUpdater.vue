@@ -1,9 +1,25 @@
 <template>
-  <q-input square outlined v-model="playbackTimer" label="Song Timer" />
-  <q-input square outlined v-model="scrubber" label="Position In Song" />
-  <q-input square outlined v-model="pauseTimer" label="Time between songs" />
-  <q-btn @click="update()">Update!</q-btn>
+  <div class="playback-update-container">
+    <div class="playback-inputs">
+      <q-input square outlined v-model="playbackTimer" label="Song Timer" />
+      <q-input square outlined v-model="scrubber" label="Position In Song" />
+      <q-input
+        square
+        outlined
+        v-model="pauseTimer"
+        label="Time between songs"
+      />
+    </div>
+    <div class="row justify-center q-mb-sm">
+      <q-btn @click="update()" color="primary">Update!</q-btn>
+    </div>
+  </div>
 </template>
+<style>
+.playback-inputs > * {
+  margin: 12px;
+}
+</style>
 
 <script setup lang="ts">
 import { Meta } from 'quasar';

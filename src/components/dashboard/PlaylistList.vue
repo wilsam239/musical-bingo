@@ -39,7 +39,12 @@ onMounted(() => {
         </q-item-label>
       </q-item-section>
     </q-item>
-    <q-item v-for="playlist of playlists" v-bind:key="playlist.id">
+    <q-item
+      v-for="playlist of playlists"
+      v-bind:key="playlist.id"
+      clickable
+      v-ripple
+    >
       <q-avatar rounded class="q-mr-md">
         <img :src="playlist.images.at(0)?.url" />
       </q-avatar>
