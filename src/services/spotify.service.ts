@@ -68,6 +68,17 @@ class Spotify {
           client_id: '',
         })
     );
+
+    setInterval(() => {
+      if (this.userSession.refresh_token) {
+        console.log('Triggering auto token refresh');
+        this.refreshToken().subscribe();
+      }
+    }, this.minutesToMilliseconds(20));
+  }
+
+  minutesToMilliseconds(mins: number) {
+    return mins * 60 * 1000;
   }
 
   clearSession() {
