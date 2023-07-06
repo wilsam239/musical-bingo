@@ -11,7 +11,15 @@ defineProps<{
 <template>
   <q-list bordered class="rounded-borders">
     <q-item v-for="playlist of songs" v-bind:key="playlist.id">
-      <q-avatar rounded class="q-mr-md"> </q-avatar>
+      <q-avatar rounded class="q-mr-md">
+        <img
+          :src="
+            playlist.album.images.reduce((prev, cur) => {
+              return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;
+            }).url
+          "
+        />
+      </q-avatar>
 
       <q-item-section>
         <q-item-label lines="1">
