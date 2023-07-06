@@ -7,16 +7,8 @@ const spotify = SpotifyService;
 
 let song: SpotifyApi.TrackObjectFull | undefined = undefined;
 
-const currentSong = computed(() => {
-  return song?.name ?? 'No Song Playing';
-});
-const artists = computed(() => {
-  if (song) {
-    return song.artists.map((a) => a.name).join(', ');
-  } else {
-    return 'No Song Data';
-  }
-});
+const currentSong = ref('No Song Playing');
+const artists = ref('No Artist Information');
 
 function getCurrentSong() {
   spotify
@@ -24,6 +16,8 @@ function getCurrentSong() {
     .subscribe((resp: SpotifyApi.CurrentPlaybackResponse): void => {
       if (resp && resp.item && resp.item.type == 'track') {
         song = resp.item;
+        currentSong.value = song.name;
+        artists.value = song.artists.map((a) => a.name).join(', ');
         spotify.addSongToPlayed(resp.item);
       }
     });
@@ -53,7 +47,7 @@ onMounted(() => {
     <div>
       <div>
         <q-btn size="lg" flat dense round icon="settings">
-          <q-menu auto-close>
+          <q-menu>
             <playback-updater></playback-updater>
           </q-menu>
         </q-btn>

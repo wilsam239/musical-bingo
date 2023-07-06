@@ -5,7 +5,7 @@ import SongList from './SongList.vue';
 
 const spotify = SpotifyService;
 
-const songsToShow = ref(spotify.sessionPlayed);
+const tracks = ref([]);
 const songFilter = ref('');
 </script>
 <template>
