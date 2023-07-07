@@ -63,6 +63,10 @@ onMounted(() => {
 </style>
 <template>
   <div class="column">
+    <div class="row justify-between q-mt-md q-ml-md q-mr-md">
+      <q-btn round color="secondary" icon="chevron_left" to="/dashboard" />
+      <q-btn color="secondary" icon="note_add" label="Generate Bingo Cards" />
+    </div>
     <div class="row no-wrap">
       <q-img
         :src="
