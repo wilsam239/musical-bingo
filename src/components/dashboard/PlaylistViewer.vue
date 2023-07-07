@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Ref, computed, defineComponent, onMounted, ref, watch } from 'vue';
-import { SpotifyService } from '../../services/spotify.service';
-import PlaybackUpdater from './PlaybackUpdater.vue';
-import { useRoute } from 'vue-router';
-import { tap } from 'rxjs/internal/operators/tap';
 import { mergeMap } from 'rxjs/internal/operators/mergeMap';
+import { tap } from 'rxjs/internal/operators/tap';
+import { Ref, onMounted, reactive, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import { SpotifyService } from '../../services/spotify.service';
 import SongList from './SongList.vue';
 
 const spotify = SpotifyService;
 const route = useRoute();
 
+let playlist: Ref<SpotifyApi.PlaylistObjectFull | undefined> = ref(undefined);
 let tracks: Ref<SpotifyApi.TrackObjectFull[]> = ref([]);
 
 const loading = ref(true);
@@ -18,6 +18,9 @@ function fetchPlaylist(id: string) {
   spotify
     .fetchPlaylist(id)
     .pipe(
+      tap((pl) => {
+        playlist.value = pl;
+      }),
       mergeMap((playlist) => {
         return spotify.fetchPlaylistTracks(playlist);
       }),
@@ -43,6 +46,45 @@ onMounted(() => {
   }
 });
 </script>
+<style>
+.playlist-image {
+  max-width: 200px;
+  min-width: 200px;
+  width: 200px;
+}
+#playlist-title {
+  width: 75%;
+}
+
+#playlist-title,
+#playlist-description {
+  max-width: 75%;
+}
+</style>
 <template>
-  <SongList :songs="tracks"></SongList>
+  <div class="column">
+    <div class="row no-wrap">
+      <q-img
+        :src="
+          playlist?.images.reduce((prev, cur) => {
+            return (prev.width ?? 0) > (cur.width ?? 0) ? prev : cur;
+          }).url
+        "
+        class="playlist-image q-ma-md shadow-2 rounded-borders"
+      />
+      <div class="column justify-center">
+        <div class="text-weight-bolder ellipsis text-h2" id="playlist-title">
+          {{ playlist?.name }}
+        </div>
+        <div class="text-grey-8" id="playlist-description">
+          {{ playlist?.description }}
+        </div>
+        <div class="text-grey-5 q-mt-lg" id="playlist-info">
+          {{ playlist?.tracks.total }} Songs
+        </div>
+      </div>
+      <div class="row"></div>
+    </div>
+    <SongList :songs="tracks"></SongList>
+  </div>
 </template>

@@ -91,12 +91,12 @@ export class Bingo {
     return this.allCellData.length > 0;
   }
 
-  set playlistInfo(p: SpotifyApi.PlaylistObjectFull) {
+  generate(p: SpotifyApi.PlaylistObjectFull, _songs: SpotifyApi.TrackObjectFull[]) {
     this._playlistInfo = p;
     if (this.numberOfSheets > 0) {
-      const songs = p.tracks.items.map(
+      const songs = _songs.map(
         (i) =>
-          `${i.track?.name} - ${i.track?.artists.map((a) => a.name).join(', ')}`
+          `${i.name} - ${i.artists.map((a) => a.name).join(', ')}`
       );
       if (songs.length < this.rows * this.cols) {
         console.error('Not enough songs in the playlist');

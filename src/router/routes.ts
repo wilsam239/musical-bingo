@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/bingo/:id',
+    path: '/bingo',
     name: 'bingo',
     component: () => import('layouts/BingoLayout.vue'),
   },

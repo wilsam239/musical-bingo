@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BingoTable from '../components/BingoTable.vue';
+import BingoTable from '../components/bingo/BingoTable.vue';
 import { BingoService } from '../services/bingo.service';
 import type { Ref } from 'vue';
 import { onMounted, ref } from 'vue';

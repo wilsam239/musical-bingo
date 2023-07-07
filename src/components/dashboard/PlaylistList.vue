@@ -71,7 +71,7 @@ function generateBingoSheets(playlist: SpotifyApi.PlaylistObjectSimplified) {
       :to="'/dashboard/' + playlist.id"
     >
       <q-avatar rounded class="q-mr-md">
-        <img :src="playlist.images.at(0)?.url" />
+        <q-img :src="playlist.images.at(0)?.url" />
       </q-avatar>
 
       <q-item-section>

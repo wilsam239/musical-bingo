@@ -1,8 +1,14 @@
 <script setup lang="ts">
 import { useTemplateRefsList } from '@vueuse/core';
-import { QStepper } from 'quasar';
-import { generate } from 'rxjs';
+import { QDialog, QStepper } from 'quasar';
+import { generate, mergeMap, tap } from 'rxjs';
+import { SpotifyService } from 'src/services/spotify.service';
+import { BingoService } from 'src/services/bingo.service';
+
 import { Ref, ref, watch, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const props = defineProps<{ dialog_mode: TMode; playlist?: string }>();
 
 type TMode = 'playlist' | 'bingo' | 'both' | undefined;
 
@@ -12,7 +18,7 @@ const showBoth = ref(false);
 
 const generateBingo = ref(false);
 
-const props = defineProps<{ dialog_mode: TMode; playlist?: string }>();
+const router = useRouter();
 
 // Playlist Config
 const url = ref('');
@@ -23,7 +29,9 @@ const songCount = ref(50);
 const subtitle = ref('');
 const sheetCount = ref(20);
 
+// Refs
 const stepper: Ref<QStepper | null> = ref(null);
+const dialog: Ref<QDialog | null> = ref(null);
 
 watch(
   () => props.dialog_mode,
@@ -50,11 +58,21 @@ watch(
   }
 );
 
+function extractPlaylistId(url: string): string | null {
+  const regex = /\/playlist\/([^/?]+)/;
+  const match = url.match(regex);
+  if (match && match.length >= 2) {
+    return match[1];
+  }
+  return null;
+}
+
 function playlistSubmit() {
   if (generateBingo.value && stepper.value) {
     stepper.value.next();
     mode.value = 'both';
   } else {
+    dialog.value?.hide();
     console.log('Done! Now create playlist from link');
   }
 }
@@ -62,7 +80,29 @@ function playlistSubmit() {
 function bingoSubmit() {
   if (!url.value) {
     console.error('No url, so no bingo can be created');
+    return;
   }
+  const id = extractPlaylistId(url.value);
+
+  if (!id) {
+    console.error('Failed to get id from the playlist url', url.value);
+    return;
+  }
+  SpotifyService.fetchPlaylist(id)
+    .pipe(
+      mergeMap((playlist) => {
+        return SpotifyService.fetchPlaylistTracks(playlist).pipe(
+          tap((songs) => {
+            BingoService.numberOfSheets = sheetCount.value;
+            BingoService.subtitle = subtitle.value;
+            BingoService.generate(playlist, songs);
+            router.push('/bingo');
+          })
+        );
+      })
+    )
+    .subscribe();
+  dialog.value?.hide();
   console.log('Done! Now create bingo cards from this playlist');
 }
 
@@ -81,7 +121,7 @@ function reset() {
 }
 </script>
 <template>
-  <q-dialog v-model="showDialog" @hide="reset()">
+  <q-dialog v-model="showDialog" @hide="reset()" ref="dialog">
     <q-card>
       <q-toolbar>
         <q-avatar>

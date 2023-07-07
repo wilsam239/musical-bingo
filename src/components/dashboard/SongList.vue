@@ -12,7 +12,7 @@ const props = defineProps<{
   <q-list bordered class="rounded-borders">
     <q-item v-for="playlist of songs" v-bind:key="playlist.id">
       <q-avatar rounded class="q-mr-md">
-        <img
+        <q-img
           :src="
             playlist.album.images.reduce((prev, cur) => {
               return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;

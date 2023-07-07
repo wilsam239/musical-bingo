@@ -1,6 +1,6 @@
 {
   "name": "musical-bingo-quasar",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "Dashboard to create, run, and manage musical bingo at a pub",
   "productName": "Musical Bingo",
   "author": "Sam Williamson <swilliamson239@hotmail.com>",
