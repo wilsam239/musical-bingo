@@ -1,6 +1,6 @@
 <template>
   <div class="playback-update-container">
-    <div class="playback-inputs">
+    <div class="spaced-inputs">
       <q-input square outlined v-model="playbackTimer" label="Song Timer" />
       <q-input square outlined v-model="scrubber" label="Position In Song" />
       <q-input
@@ -15,11 +15,7 @@
     </div>
   </div>
 </template>
-<style>
-.playback-inputs > * {
-  margin: 12px;
-}
-</style>
+<style></style>
 
 <script setup lang="ts">
 import { Meta } from 'quasar';

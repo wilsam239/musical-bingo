@@ -21,6 +21,7 @@ export class Bingo {
 
   populate(data: string[]) {
     this.allCellData = data;
+    this.shuffledData = [];
     this._populate();
   }
 
@@ -46,120 +47,6 @@ export class Bingo {
 
     // this.findWinners()
     // console.log(this._winners)
-  }
-
-  private findWinners() {
-    const sheetPlaces: { [key: number]: number[] } = {};
-    const sheetsToCheck = [...this.shuffledData];
-    const calledSongs: string[] = [];
-    for (const song of this.allCellData) {
-      calledSongs.push(song);
-      const winnersThisRound: number[] = [];
-
-      sheetsToCheck.forEach((sheet, i) => {
-        if (
-          Object.values(sheetPlaces)
-            .flat()
-            .includes(i + 1)
-        ) {
-          return;
-        }
-        let hasWinner = false;
-        for (const row of this.extractRows(sheet)) {
-          if (row.every((song) => calledSongs.includes(song))) {
-            hasWinner = true;
-            break;
-          }
-        }
-
-        if (!hasWinner) {
-          for (const col of this.extractColumns(sheet)) {
-            if (col.every((song) => calledSongs.includes(song))) {
-              hasWinner = true;
-              break;
-            }
-          }
-
-          if (!hasWinner) {
-            for (const dia of this.extractDiagonals(sheet)) {
-              if (dia.every((song) => calledSongs.includes(song))) {
-                hasWinner = true;
-                break;
-              }
-            }
-          }
-        }
-
-        if (hasWinner) {
-          winnersThisRound.push(i + 1);
-        }
-      });
-
-      if (winnersThisRound.length > 0) {
-        const place = Object.keys(sheetPlaces).length + 1;
-
-        sheetPlaces[place] = winnersThisRound;
-      }
-    }
-
-    this._winners = sheetPlaces;
-  }
-
-  private extractDiagonals(d: string[]) {
-    const size = d.length;
-    const diagonalLtR: string[] = [];
-    const diagonalRtL: string[] = [];
-
-    // Check if the array is square (number of elements is a perfect square)
-    if (Math.sqrt(size) % 1 !== 0) {
-      return [diagonalLtR, diagonalRtL];
-    }
-
-    const dimension = Math.sqrt(size);
-
-    // Retrieve elements on the diagonal from left to right
-    for (let i = 0; i < size; i += dimension + 1) {
-      diagonalLtR.push(d[i]);
-    }
-
-    // Retrieve elements on the diagonal from right to left
-    for (let i = dimension - 1; i < size - 1; i += dimension - 1) {
-      diagonalRtL.push(d[i]);
-    }
-
-    return [diagonalLtR, diagonalRtL];
-  }
-
-  private extractRows(d: string[]) {
-    const rows = [];
-    for (let i = 0; i <= this.rows; i++) {
-      rows.push(this.extractRow(d, i));
-    }
-    return rows.slice(1, this.rows + 1);
-  }
-
-  private extractRow(d: string[], row: number) {
-    return d.slice((row - 1) * this.rows, this.cols * row);
-  }
-
-  private extractColumns(d: string[]) {
-    const columns = [];
-
-    for (let i = 0; i < this.cols; i++) {
-      columns.push(this.extractColumn(d, i));
-    }
-
-    return columns;
-  }
-
-  private extractColumn(d: string[], col: number) {
-    return [
-      d[col],
-      d[col + this.cols],
-      d[col + this.cols * 2],
-      d[col + this.cols * 3],
-      d[col + this.cols * 4],
-    ];
   }
 
   shuffle(strings: string[]) {
@@ -202,13 +89,6 @@ export class Bingo {
 
   get isPopulated() {
     return this.allCellData.length > 0;
-  }
-
-  get winners() {
-    if (this._winners) {
-      return Object.values(this._winners);
-    }
-    return [];
   }
 
   set playlistInfo(p: SpotifyApi.PlaylistObjectFull) {
