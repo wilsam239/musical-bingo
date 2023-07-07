@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { create } from 'domain';
 import { map } from 'rxjs/internal/operators/map';
 import { tap } from 'rxjs/internal/operators/tap';
 import { SpotifyService } from 'src/services/spotify.service';
@@ -9,6 +10,19 @@ import { Ref, defineComponent, onMounted, ref } from 'vue';
 const playlists: Ref<SpotifyApi.PlaylistObjectSimplified[]> = ref([]);
 const playlistFilter = ref('');
 const spotify = SpotifyService;
+
+const openNewDialog = ref(false);
+const alreadyHasURL = ref(false);
+
+// DIALOG VARIABLES
+let usePlaylist: SpotifyApi.PlaylistObjectSimplified | undefined = undefined;
+const newUrl = ref('');
+const newName = ref('');
+const newSongCount = ref(50);
+const newGenerateBingo = ref(false);
+const bingoSheetCount = ref(20);
+const bingoSubtitle = ref('');
+
 onMounted(() => {
   spotify
     .fetchPlaylists()
@@ -20,11 +34,23 @@ onMounted(() => {
     )
     .subscribe();
 });
+
+function createNewPlaylist(playlist?: SpotifyApi.PlaylistObjectSimplified) {
+  if (playlist) {
+    usePlaylist = playlist;
+    newUrl.value = playlist.external_urls.spotify;
+    console.log('already have url ', newUrl.value);
+  } else {
+    console.log('Get url from user');
+  }
+
+  openNewDialog.value = true;
+}
 </script>
 <template>
   <q-input square outlined v-model="playlistFilter" label="Filter Playlists" />
   <q-list bordered class="rounded-borders">
-    <q-item clickable v-ripple>
+    <q-item clickable v-ripple @click="createNewPlaylist()">
       <q-item-section avatar>
         <q-avatar
           rounded
@@ -90,12 +116,12 @@ onMounted(() => {
                   </q-item-section>
                   <q-item-section>View</q-item-section>
                 </q-item> -->
-                <!-- <q-item clickable>
+                <q-item clickable @click="createNewPlaylist(playlist)">
                   <q-item-section avatar>
-                    <q-icon name="play_arrow"></q-icon>
+                    <q-icon name="pencil"></q-icon>
                   </q-item-section>
-                  <q-item-section>Start Playback</q-item-section>
-                </q-item> -->
+                  <q-item-section>Create Subplaylist</q-item-section>
+                </q-item>
               </q-list>
             </q-menu>
           </q-btn>
@@ -103,4 +129,57 @@ onMounted(() => {
       </q-item-section>
     </q-item>
   </q-list>
+
+  <q-dialog v-model="openNewDialog">
+    <q-card>
+      <q-toolbar>
+        <q-avatar>
+          <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
+        </q-avatar>
+
+        <q-toolbar-title
+          >Configure New Playlist
+          <span v-if="alreadyHasURL">
+            from {{ usePlaylist?.name }}</span
+          ></q-toolbar-title
+        >
+
+        <q-btn flat round dense icon="close" v-close-popup />
+      </q-toolbar>
+
+      <q-card-section>
+        <q-input
+          square
+          outlined
+          v-if="!alreadyHasURL"
+          v-model="newUrl"
+          label="Playlist URL"
+        />
+        <q-input square outlined v-model="newName" label="Playlist Name" />
+        <q-input
+          square
+          outline
+          v-model="newSongCount"
+          label="Number Of Songs To Use"
+        />
+
+        <q-toggle v-model="newGenerateBingo" label="Generate Bingo Cards" />
+      </q-card-section>
+
+      <q-card-section v-if="newGenerateBingo">
+        <q-input
+          square
+          outline
+          v-model="bingoSubtitle"
+          label="Bingo Subtitle eg: Sponsor, theme, etc"
+        />
+        <q-input
+          square
+          outline
+          v-model="bingoSheetCount"
+          label="Number Of Bingo Sheets"
+        />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
