@@ -264,6 +264,10 @@ class Spotify {
     );
   }
 
+  fetchQueue(): Observable<SpotifyApi.UsersQueueResponse> {
+    return this.api('me/player/queue');
+  }
+
   scrubToSeconds(seconds: number) {
     return this.api(`me/player/seek?position_ms=${seconds * 1000}`, {
       method: 'PUT',

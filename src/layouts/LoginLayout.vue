@@ -36,22 +36,25 @@ watch(clientID, (val) => {
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
-    <q-page-container>
-      <q-card
-        flat
-        bordered
-        class="my-card"
-        :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'"
-      >
-        <q-card-section>
-          <div class="row items-center no-wrap">
-            <div class="col">
-              <div class="text-h6">Spotify App Client ID</div>
-              <!-- <div class="text-subtitle2">by John Doe</div> -->
-            </div>
+  <q-layout view="hHh lpR fFf" class="column justify-center">
+    <q-page-container
+      class="fit row wrap justify-center items-start content-start"
+    >
+      <div class="full-height">
+        <q-card
+          flat
+          bordered
+          class="my-card"
+          :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-2'"
+        >
+          <q-card-section>
+            <div class="row items-center no-wrap">
+              <div class="col">
+                <div class="text-h6">Spotify App Client ID</div>
+                <!-- <div class="text-subtitle2">by John Doe</div> -->
+              </div>
 
-            <!-- <div class="col-auto">
+              <!-- <div class="col-auto">
               <q-btn color="grey-7" round flat icon="more_vert">
                 <q-menu cover auto-close>
                   <q-list>
@@ -68,26 +71,27 @@ watch(clientID, (val) => {
                 </q-menu>
               </q-btn>
             </div> -->
-          </div>
-        </q-card-section>
+            </div>
+          </q-card-section>
 
-        <q-card-section>
-          <q-input
-            square
-            outlined
-            v-model="clientID"
-            label="Spotify Web App Client ID"
-          />
-        </q-card-section>
+          <q-card-section>
+            <q-input
+              square
+              outlined
+              v-model="clientID"
+              label="Spotify Web App Client ID"
+            />
+          </q-card-section>
 
-        <q-separator />
+          <q-separator />
 
-        <q-card-actions>
-          <q-btn flat @click="ss.loginNoCode()" :disable="!clientID"
-            >Login</q-btn
-          >
-        </q-card-actions>
-      </q-card>
+          <q-card-actions>
+            <q-btn flat @click="ss.loginNoCode()" :disable="!clientID"
+              >Login</q-btn
+            >
+          </q-card-actions>
+        </q-card>
+      </div>
     </q-page-container>
   </q-layout>
 </template>

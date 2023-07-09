@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { Meta } from 'quasar';
 import { Subscription, of, timer } from 'rxjs';
-import { delay, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { delay, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
 import { SpotifyService } from 'src/services/spotify.service';
 import { defineComponent, PropType, ref, toRef } from 'vue';
@@ -45,7 +45,30 @@ function update() {
 
   playbackSub = timer(playbackTimer.value * 1000)
     .pipe(
-      switchMap(() => pause().pipe(switchMap(() => SpotifyService.nextTrack())))
+      switchMap(() =>
+        pause().pipe(
+          switchMap(() =>
+            SpotifyService.fetchQueue().pipe(
+              map((response) => response.queue.at(0))
+            )
+          ),
+          switchMap((nextSong) =>
+            SpotifyService.nextTrack().pipe(map(() => nextSong))
+          ),
+          switchMap((nextSong) => {
+            if (scrubber.value > 0) {
+              return SpotifyService.scrubToSeconds(scrubber.value);
+            } else if (scrubber.value < 0 && nextSong) {
+              console.info('Going to last ' + Math.abs(scrubber.value));
+              return SpotifyService.scrubToSeconds(
+                nextSong.duration_ms / 1000 - Math.abs(scrubber.value)
+              );
+            } else {
+              return of(true);
+            }
+          })
+        )
+      )
     )
     .subscribe(() => {
       SnackbarService.msgSuccess(
