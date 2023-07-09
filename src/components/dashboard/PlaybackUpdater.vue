@@ -11,7 +11,7 @@
       />
     </div>
     <div class="row justify-center q-mb-sm">
-      <q-btn @click="update()" color="primary">Update!</q-btn>
+      <q-btn @click="update(true)" color="primary">Update!</q-btn>
     </div>
   </div>
 </template>
@@ -38,7 +38,22 @@ function pause() {
     return of('');
   }
 }
-function update() {
+function update(fromButton = false) {
+  let scrub = scrubber.value;
+
+  console.log(scrubber.value, playbackTimer.value);
+  console.log(scrubber.value + playbackTimer.value);
+  if (
+    parseInt(scrubber.value as any) + parseInt(playbackTimer.value as any) ===
+    0
+  ) {
+    console.info(
+      'Scrubber and playback will cancel out, adjusting by 5 seconds.'
+    );
+    // 5 Seconds should be enough that if the requests take a little but of time to run.
+    scrub -= 5;
+  }
+
   if (!!playbackSub) {
     playbackSub.unsubscribe();
   }
@@ -56,12 +71,13 @@ function update() {
             SpotifyService.nextTrack().pipe(map(() => nextSong))
           ),
           switchMap((nextSong) => {
-            if (scrubber.value > 0) {
-              return SpotifyService.scrubToSeconds(scrubber.value);
-            } else if (scrubber.value < 0 && nextSong) {
-              console.info('Going to last ' + Math.abs(scrubber.value));
+            if (scrub > 0) {
+              return SpotifyService.scrubToSeconds(scrub);
+            } else if (scrub < 0 && nextSong) {
+              console.info('Going to last ' + Math.abs(scrub));
+
               return SpotifyService.scrubToSeconds(
-                nextSong.duration_ms / 1000 - Math.abs(scrubber.value)
+                Math.round(nextSong.duration_ms / 1000) - Math.abs(scrub)
               );
             } else {
               return of(true);
@@ -77,5 +93,9 @@ function update() {
       );
       update();
     });
+
+  if (fromButton) {
+    SnackbarService.msgSuccess('Playback Update', 'Settings changed.');
+  }
 }
 </script>
