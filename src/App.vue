@@ -1,14 +1,15 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
-import { APP_VERSION } from './assets/version';
-
-const version = APP_VERSION
-
-console.log(`Running version: ${version}`)
-</script>
-
 <template>
-  <RouterView />
+  <router-view />
 </template>
 
-<style scoped></style>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { APP_VERSION } from './assets/version';
+
+const version = APP_VERSION;
+
+console.log(`Running version: ${version}`);
+export default defineComponent({
+  name: 'App',
+});
+</script>

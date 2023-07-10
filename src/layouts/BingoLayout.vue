@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import BingoTable from '@/components/BingoTable.vue';
-import { BingoService } from '@/services/bingo.service';
+import BingoTable from '../components/bingo/BingoTable.vue';
+import { BingoService } from '../services/bingo.service';
 import type { Ref } from 'vue';
 import { onMounted, ref } from 'vue';
 
-const iterations: Ref<number[]> = ref([])
-const bingo = BingoService
+const iterations: Ref<number[]> = ref([]);
+const bingo = BingoService;
 onMounted(() => {
   for (let i = 0; i < bingo.numberOfSheets; i++) {
-    iterations.value.push(i)
+    iterations.value.push(i);
   }
-})
+});
 </script>
 
 <template>
@@ -18,26 +18,57 @@ onMounted(() => {
     <div class="subpage">
       <h1>Setup</h1>
       <p>
-        Link to Playlist: <a v-bind:href="bingo.playlistURL">{{ bingo.playlistURL }}</a>
+        Link to Playlist:
+        <a v-bind:href="bingo.playlistURL">{{ bingo.playlistURL }}</a>
       </p>
       <p><b>START OF SCRIPT</b></p>
-      <p>Welcome to Welders Dog Musical Bingo! We've got X rounds of Bingo tonight, but there's no pressure to stay for all of them! The best thing about bingo is that you can come in and join at any time, or leave at any time! To play bingo all you need to do is make any qualifying purchase at the bar, which is any food or beverage.</p>
-      <p>As usual we have prizes up for grabs in each round! 1st prize in each round will receive a Welders Dog 4 Pack from the fridge, and second place will receive a single Welders Dog Beer from the fridge. Limit is one win per team per round, so you cannot win both 1st and 2nd prize in the round.</p>
-      <p>Bingo is played in teams, all you have to do is listen out for the songs on your sheet, and as you hear them, mark them off. Once you have the <i>--insert bingo pattern here eg: 5 down, 5 across, or 5 diagonal--</i> sing out bingo and come and see us at the bar to verify your win!</p>
+      <p>
+        Welcome to Welders Dog Musical Bingo! We've got X rounds of Bingo
+        tonight, but there's no pressure to stay for all of them! The best thing
+        about bingo is that you can come in and join at any time, or leave at
+        any time! To play bingo all you need to do is make any qualifying
+        purchase at the bar, which is any food or beverage.
+      </p>
+      <p>
+        As usual we have prizes up for grabs in each round! 1st prize in each
+        round will receive a Welders Dog 4 Pack from the fridge, and second
+        place will receive a single Welders Dog Beer from the fridge. Limit is
+        one win per team per round, so you cannot win both 1st and 2nd prize in
+        the round.
+      </p>
+      <p>
+        Bingo is played in teams, all you have to do is listen out for the songs
+        on your sheet, and as you hear them, mark them off. Once you have the
+        <i>--insert bingo pattern here eg: 5 down, 5 across, or 5 diagonal--</i>
+        sing out bingo and come and see us at the bar to verify your win!
+      </p>
       <p>After both prizes have been claimed we move on to the next round.</p>
-      <p>Tonights menu on the food truck is <i>--read out menu here--</i>, but if that doesn't take your fancy you are welcome to order delivery from the Union Bar next door. Order and pay on your phone using the QR codes available at the bar or on your bingo sheet. Use code WELDERS10 for a discount.</p>
-      <p>We have a few events coming up over the next week, <i>--read out events here--</i></p>
+      <p>
+        Tonights menu on the food truck is <i>--read out menu here--</i>, but if
+        that doesn't take your fancy you are welcome to order delivery from the
+        Union Bar next door. Order and pay on your phone using the QR codes
+        available at the bar or on your bingo sheet. Use code WELDERS10 for a
+        discount.
+      </p>
+      <p>
+        We have a few events coming up over the next week,
+        <i>--read out events here--</i>
+      </p>
 
       <p><b>END OF SCRIPT</b></p>
       <ul>
         <li>Print all of the following sheets.</li>
-        <li>Keep track of songs played in one of the following ways:
-          <br><br>
-          You could write down the songs that are played everytime a new one comes on.
-          <br><br>
-          Or you could check the songs in the queue that remain, and if the songs that the player has bingo for are not in the queue, then they win
-          <br><br>
-          Or you could just play the playlist in order from the top so you know whats been played.
+        <li>
+          Keep track of songs played in one of the following ways: <br /><br />
+          You could write down the songs that are played everytime a new one
+          comes on.
+          <br /><br />
+          Or you could check the songs in the queue that remain, and if the
+          songs that the player has bingo for are not in the queue, then they
+          win
+          <br /><br />
+          Or you could just play the playlist in order from the top so you know
+          whats been played.
         </li>
       </ul>
     </div>
@@ -53,7 +84,10 @@ onMounted(() => {
             viewBox="0 0 95 71"
           >
             <title>The Welders Dog</title>
-            <path class="cls-1" d="M5.34,58.16v1.75H3.68v10.5H1.91V59.91H.26V58.16Z"></path>
+            <path
+              class="cls-1"
+              d="M5.34,58.16v1.75H3.68v10.5H1.91V59.91H.26V58.16Z"
+            ></path>
             <path
               class="cls-1"
               d="M6.46,58.16H8.23v5.25H9.77V58.16h1.77V70.41H9.77V65.16H8.23v5.25H6.46Z"
@@ -70,7 +104,10 @@ onMounted(() => {
               class="cls-1"
               d="M33,58.16h4.58v1.75H34.81v3.5h2.42v1.75H34.81v3.51h2.81v1.74H33Z"
             ></path>
-            <path class="cls-1" d="M38.94,70.41V58.16H40.7V68.67h2.82v1.74Z"></path>
+            <path
+              class="cls-1"
+              d="M38.94,70.41V58.16H40.7V68.67h2.82v1.74Z"
+            ></path>
             <path
               class="cls-1"
               d="M44.58,58.16H47.3c1.57,0,2.36.87,2.36,2.58v7.1c0,1.71-.82,2.57-2.47,2.57H44.58Zm1.77,1.75v8.76h.77c.51,0,.77-.27.77-.83v-7.1c0-.56-.26-.83-.77-.83Z"
