@@ -58,6 +58,12 @@ class Spotify {
 
   private actions: Set<string> = new Set();
   constructor() {
+    const autoRefresh = () => {
+      if (this.userSession.refresh_token) {
+        console.log('Triggering auto token refresh');
+        this.refreshToken().subscribe();
+      }
+    };
     this.sessionPlaylists = JSON.parse(
       sessionStorage.getItem('playlists') ?? '[]'
     );
@@ -69,11 +75,10 @@ class Spotify {
         })
     );
 
+    autoRefresh();
+
     setInterval(() => {
-      if (this.userSession.refresh_token) {
-        console.log('Triggering auto token refresh');
-        this.refreshToken().subscribe();
-      }
+      autoRefresh();
     }, this.minutesToMilliseconds(20));
   }
 
