@@ -13,13 +13,13 @@ let code;
 let loading = ref(true);
 onMounted(() => {
   let curURL = window.location.href;
-  if (curURL.includes('musical-bingo/#')) {
-    console.log('Has hash');
-  } else {
+  if (!curURL.includes('musical-bingo/#')) {
+    console.info('Fixing URL to have a hash.');
     curURL = curURL.replace('musical-bingo/', 'musical-bingo/#/');
 
     window.location.href = decodeURIComponent(curURL);
   }
+
   code = ar.query.code as string;
 
   if (code) {
@@ -33,7 +33,6 @@ onMounted(() => {
   clientID.value = ss.clientID;
   // clientSecret.value = ss.clientSecret
   if (ss.isLoggedIn) {
-    console.log('Still logged in');
     router.push('/dashboard');
   }
 });
