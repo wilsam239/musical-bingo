@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { PlayedSong, SpotifyService } from 'src/services/spotify.service';
-import { Ref, defineComponent, onMounted, ref, watch } from 'vue';
-import SongList from './SongList.vue';
 import { useDebounceFn } from '@vueuse/core';
+import { PlayedSong, SpotifyService } from 'src/services/spotify.service';
+import { Ref, ref, watch } from 'vue';
+import SongList from './SongList.vue';
 
 const spotify = SpotifyService;
 let allSongs: PlayedSong[] = spotify.sessionPlayed;
