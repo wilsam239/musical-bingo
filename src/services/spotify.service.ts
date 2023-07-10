@@ -45,16 +45,17 @@ class ACTIONS {
   static FETCH_PLAYLISTS = 'fetch_playlists';
   static FETCH_TRACKS = 'fetch_tracks';
 }
+interface BingoSession {
+  client_id: string;
+  access_token?: string;
+  refresh_token?: string;
+  expiry?: number;
+  user?: SpotifyApi.UserObjectPrivate;
+}
 class Spotify {
   private snack = SnackbarService;
   private url = 'https://api.spotify.com/v1/';
-  private userSession: {
-    client_id: string;
-    access_token?: string;
-    refresh_token?: string;
-    expiry?: number;
-    user?: SpotifyApi.UserObjectPrivate;
-  };
+  private userSession: BingoSession;
 
   sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = [];
   private sessionPlayed: PlayedSong[] = [];
@@ -190,7 +191,6 @@ class Spotify {
     return this.api('me').pipe(
       tap((me) => {
         this.me = me;
-        // console.log(me)
       })
     );
   }
@@ -473,6 +473,13 @@ class Spotify {
         return throwError(() => err);
       })
     );
+  }
+
+  logout() {
+    this.userSession.access_token = undefined;
+    this.userSession.refresh_token = undefined;
+    this.userSession.expiry = undefined;
+    this.userSession.user = undefined;
   }
 
   refreshToken() {

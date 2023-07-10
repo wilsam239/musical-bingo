@@ -2,17 +2,25 @@
 import { useUrlSearchParams } from '@vueuse/core';
 import { SpotifyService } from '../services/spotify.service';
 import { onMounted, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 const clientID = ref('id');
 const ss = SpotifyService;
 const router = useRouter();
+const ar = useRoute();
 
 let code;
 let loading = ref(true);
 onMounted(() => {
-  const params = new URLSearchParams(window.location.search);
-  code = params.get('code');
+  let curURL = window.location.href;
+  if (curURL.includes('musical-bingo/#')) {
+    console.log('Has hash');
+  } else {
+    curURL = curURL.replace('musical-bingo/', 'musical-bingo/#/');
+
+    window.location.href = decodeURIComponent(curURL);
+  }
+  code = ar.query.code as string;
 
   if (code) {
     ss.loginWithCode(code).subscribe(() => {

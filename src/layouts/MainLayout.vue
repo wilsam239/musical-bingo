@@ -11,6 +11,7 @@
           Expires In {{ expiresIn }} Minutes
         </q-toolbar-title>
 
+        <q-btn dense flat round icon="logout" @click="spotify.logout()" />
         <q-btn dense flat round icon="refresh" @click="refreshToken" />
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
@@ -74,6 +75,7 @@ function toggleRightDrawer() {
 function refreshToken() {
   spotify.refreshToken().subscribe();
 }
+
 onMounted(() => {
   spotify.loadingState
     .pipe(
