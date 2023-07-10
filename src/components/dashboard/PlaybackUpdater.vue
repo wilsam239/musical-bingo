@@ -29,13 +29,17 @@
  !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
       />
     </div>
-    <div class="row justify-center q-mb-sm">
+    <div class="row justify-around q-mb-sm">
       <q-btn
         :disable="isDisabled()"
         @click="update(scrubber, playbackTimer, pauseTimer, true)"
         color="primary"
-        >Update!</q-btn
       >
+        Update!
+      </q-btn>
+      <q-btn :disable="!running" @click="clear(true)" color="warning">
+        Clear!
+      </q-btn>
     </div>
   </div>
 </template>
@@ -52,6 +56,7 @@ import { defineComponent, PropType, ref, toRef } from 'vue';
 const playbackTimer = ref(30);
 const scrubber = ref(0);
 const pauseTimer = ref(0);
+const running = ref(false);
 
 let playbackSub: Subscription | undefined = undefined;
 
@@ -61,11 +66,26 @@ function isDisabled() {
   }
   return false;
 }
+
 function pause(pauseVal: number) {
   if (pauseVal > 0) {
     return SpotifyService.pause().pipe(delay(pauseVal * 1000));
   } else {
     return of('');
+  }
+}
+
+function clear(fromButton = false) {
+  if (!!playbackSub) {
+    playbackSub.unsubscribe();
+  }
+
+  if (fromButton) {
+    SnackbarService.msgSuccess('Playback Updated', 'Settings cleared.');
+    playbackTimer.value = 30;
+    scrubber.value = 0;
+    pauseTimer.value = 0;
+    running.value = false;
   }
 }
 function update(
@@ -88,9 +108,7 @@ function update(
     scrub -= 5;
   }
 
-  if (!!playbackSub) {
-    playbackSub.unsubscribe();
-  }
+  clear();
 
   playbackSub = timer(playbackVal * 1000)
     .pipe(
@@ -130,6 +148,7 @@ function update(
 
   if (fromButton) {
     SnackbarService.msgSuccess('Playback Update', 'Settings changed.');
+    running.value = true;
   }
 }
 </script>

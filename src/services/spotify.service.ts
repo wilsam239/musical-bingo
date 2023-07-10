@@ -57,7 +57,8 @@ class Spotify {
   };
 
   sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = [];
-  sessionPlayed: PlayedSong[] = [];
+  private sessionPlayed: PlayedSong[] = [];
+  storeSessionPlayed = new BehaviorSubject<PlayedSong[]>([]);
 
   loadingState = new BehaviorSubject(true);
 
@@ -73,6 +74,7 @@ class Spotify {
       sessionStorage.getItem('playlists') ?? '[]'
     );
     this.sessionPlayed = JSON.parse(sessionStorage.getItem('played') ?? '[]');
+    this.storeSessionPlayed.next(this.sessionPlayed);
     this.userSession = JSON.parse(
       localStorage.getItem('userSession') ??
         JSON.stringify({
@@ -574,6 +576,7 @@ class Spotify {
     if (!lastSong || lastSong.song.id !== song.id) {
       console.info(`Added ${song.name} to the recently played songs`);
       this.sessionPlayed.unshift(playedSong);
+      this.storeSessionPlayed.next(this.sessionPlayed);
       window.sessionStorage.setItem(
         'played',
         JSON.stringify(this.sessionPlayed)
