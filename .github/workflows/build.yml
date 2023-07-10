@@ -41,7 +41,5 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_BRANCH: main
-          BRANCH: gh-pages
-          FOLDER: dist/spa
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+          folder: './dist/spa'
