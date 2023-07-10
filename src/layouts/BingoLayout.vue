@@ -16,7 +16,7 @@ onMounted(() => {
 <template>
   <div class="page">
     <div class="subpage">
-      <h1>Setup</h1>
+      <div class="title">Setup</div>
       <p>
         Link to Playlist:
         <a v-bind:href="bingo.playlistURL">{{ bingo.playlistURL }}</a>
@@ -146,7 +146,7 @@ onMounted(() => {
             ></path>
           </svg>
         </div>
-        <h1 class="flex-items">MUSICAL BINGO</h1>
+        <div class="flex-items title">MUSICAL BINGO</div>
         <h2 v-if="bingo.subtitle">{{ bingo.subtitle }}</h2>
       </header>
       <BingoTable :index="i"></BingoTable>
@@ -156,6 +156,11 @@ onMounted(() => {
 </template>
 
 <style>
+.title {
+  font-size: 30px;
+  font-weight: bold;
+  margin: 1em 0;
+}
 header {
   text-align: center;
 }
