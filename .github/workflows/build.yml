@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@main
+        uses: JamesIves/github-pages-deploy-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BASE_BRANCH: main
