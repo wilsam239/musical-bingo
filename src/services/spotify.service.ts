@@ -25,6 +25,11 @@ interface PlaylistOptions {
   customName?: string;
 }
 
+export interface PlayedSong {
+  song: SpotifyApi.TrackObjectFull;
+  timePlayed: number;
+}
+
 const SCOPE = [
   'user-read-private',
   'user-read-email',
@@ -52,7 +57,7 @@ class Spotify {
   };
 
   sessionPlaylists: SpotifyApi.PlaylistObjectFull[] = [];
-  sessionPlayed: SpotifyApi.TrackObjectFull[] = [];
+  sessionPlayed: PlayedSong[] = [];
 
   loadingState = new BehaviorSubject(true);
 
@@ -561,10 +566,14 @@ class Spotify {
   }
 
   addSongToPlayed(song: SpotifyApi.TrackObjectFull) {
-    const lastSong = this.sessionPlayed.at(-1);
-    if (!lastSong || lastSong.id !== song.id) {
+    const lastSong = this.sessionPlayed.at(0);
+    const playedSong: PlayedSong = {
+      song: song,
+      timePlayed: Date.now(),
+    };
+    if (!lastSong || lastSong.song.id !== song.id) {
       console.info(`Added ${song.name} to the recently played songs`);
-      this.sessionPlayed.push(song);
+      this.sessionPlayed.unshift(playedSong);
       window.sessionStorage.setItem(
         'played',
         JSON.stringify(this.sessionPlayed)

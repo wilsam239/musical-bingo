@@ -10,7 +10,10 @@ const props = defineProps<{
 </script>
 <template>
   <q-list bordered class="rounded-borders">
-    <q-item v-for="playlist of songs" v-bind:key="playlist.id">
+    <q-item
+      v-for="(playlist, index) of songs"
+      v-bind:key="playlist.id + '_' + index"
+    >
       <q-avatar rounded class="q-mr-md">
         <q-img
           :src="
