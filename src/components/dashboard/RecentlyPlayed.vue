@@ -54,5 +54,5 @@ onMounted(() => {
     label="Filter Songs"
     @update:model-value="filter"
   />
-  <song-list :songs="songs"></song-list>
+  <song-list :songs="songs" :mini="true"></song-list>
 </template>

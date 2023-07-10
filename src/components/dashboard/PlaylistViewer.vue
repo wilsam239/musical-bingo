@@ -63,18 +63,18 @@ onMounted(() => {
 </style>
 <template>
   <div class="column">
-    <div class="row justify-between q-mt-md q-ml-md q-mr-md">
+    <!-- <div class="row justify-between q-mt-md q-ml-md q-mr-md">
       <q-btn round color="secondary" icon="chevron_left" to="/dashboard" />
       <q-btn color="secondary" icon="note_add" label="Generate Bingo Cards" />
-    </div>
-    <div class="row no-wrap">
+    </div> -->
+    <div class="row no-wrap q-ma-md">
       <q-img
         :src="
           playlist?.images.reduce((prev, cur) => {
             return (prev.width ?? 0) > (cur.width ?? 0) ? prev : cur;
           }).url
         "
-        class="playlist-image q-ma-md shadow-2 rounded-borders"
+        class="playlist-image q-mr-md shadow-2 rounded-borders"
       />
       <div class="column justify-center">
         <div class="text-weight-bolder ellipsis text-h2" id="playlist-title">
@@ -89,6 +89,14 @@ onMounted(() => {
       </div>
       <div class="row"></div>
     </div>
-    <SongList :songs="tracks"></SongList>
+    <div class="row q-mb-md q-ml-md q-mr-md">
+      <q-btn round size="lg" color="primary" icon="note_add" class="q-mr-lg">
+        <q-tooltip> Generate Bingo Cards </q-tooltip>
+      </q-btn>
+      <q-btn flat size="lg" round color="primary" icon="playlist_add">
+        <q-tooltip> Make sub playlist </q-tooltip>
+      </q-btn>
+    </div>
+    <SongList :songs="tracks" :mini="false"></SongList>
   </div>
 </template>
