@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { useTemplateRefsList } from '@vueuse/core';
 import { QDialog, QStepper } from 'quasar';
-import { generate, mergeMap, tap } from 'rxjs';
-import { SpotifyService } from 'src/services/spotify.service';
+import { mergeMap, tap } from 'rxjs';
 import { BingoService } from 'src/services/bingo.service';
+import { SpotifyService } from 'src/services/spotify.service';
 
-import { Ref, ref, watch, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import { SnackbarService } from 'src/services/snackbar.service';
+import { Ref, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{ dialog_mode: TMode; playlist?: string }>();
 
@@ -70,8 +69,8 @@ function extractPlaylistId(url: string): string | null {
 
 function playlistSubmit() {
   if (generateBingo.value && stepper.value) {
-    stepper.value.next();
     mode.value = 'both';
+    stepper.value.next();
   } else {
     if (!url.value) {
       console.error('No url, so no playlist can be created');
@@ -161,7 +160,7 @@ function reset() {
             :name="'playlist'"
             title="Configure Playlist"
             icon="settings"
-            :done="false"
+            :done="true"
           >
             <q-form @submit="playlistSubmit" class="q-gutter-md">
               <div class="spaced-inputs">
@@ -201,7 +200,7 @@ function reset() {
             </q-form>
           </q-step>
           <q-step
-            v-if="mode == 'bingo' || mode == 'both'"
+            v-if="mode == 'bingo' || mode == 'both' || generateBingo"
             :name="'bingo'"
             title="Configure Bingo"
             icon="create_new_folder"

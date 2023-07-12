@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import { mergeMap } from 'rxjs/internal/operators/mergeMap';
 import { tap } from 'rxjs/internal/operators/tap';
-import { Ref, onMounted, reactive, ref, watch } from 'vue';
+import { Ref, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { SpotifyService } from '../../services/spotify.service';
+import GeneratorDialog from './GeneratorDialog.vue';
 import SongList from './SongList.vue';
 
 const spotify = SpotifyService;
 const route = useRoute();
 
-let playlist: Ref<SpotifyApi.PlaylistObjectFull | undefined> = ref(undefined);
-let tracks: Ref<SpotifyApi.TrackObjectFull[]> = ref([]);
+const playlist: Ref<SpotifyApi.PlaylistObjectFull | undefined> = ref(undefined);
+const tracks: Ref<SpotifyApi.TrackObjectFull[]> = ref([]);
 
+const openNewDialog: Ref<'playlist' | 'bingo' | undefined> = ref(undefined);
 const loading = ref(true);
 
 function fetchPlaylist(id: string) {
@@ -90,13 +92,32 @@ onMounted(() => {
       <div class="row"></div>
     </div>
     <div class="row q-mb-md q-ml-md q-mr-md">
-      <q-btn round size="lg" color="primary" icon="note_add" class="q-mr-lg">
+      <q-btn
+        round
+        size="lg"
+        color="primary"
+        icon="note_add"
+        class="q-mr-lg"
+        @click="openNewDialog = 'bingo'"
+      >
         <q-tooltip> Generate Bingo Cards </q-tooltip>
       </q-btn>
-      <q-btn flat size="lg" round color="primary" icon="playlist_add">
+      <q-btn
+        flat
+        size="lg"
+        round
+        color="primary"
+        icon="playlist_add"
+        @click="openNewDialog = 'playlist'"
+      >
         <q-tooltip> Make sub playlist </q-tooltip>
       </q-btn>
     </div>
     <SongList :songs="tracks" :mini="false"></SongList>
   </div>
+
+  <GeneratorDialog
+    :dialog_mode="openNewDialog"
+    :playlist="playlist?.id"
+  ></GeneratorDialog>
 </template>

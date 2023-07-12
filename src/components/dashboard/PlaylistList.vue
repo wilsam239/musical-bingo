@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { create } from 'domain';
-import { map } from 'rxjs/internal/operators/map';
-import { tap } from 'rxjs/internal/operators/tap';
-import { BingoService } from 'src/services/bingo.service';
-import { SpotifyService } from 'src/services/spotify.service';
-import { Ref, defineComponent, onMounted, ref } from 'vue';
-import GeneratorDialog from './GeneratorDialog.vue';
-import { watch } from 'fs';
 import { useDebounceFn } from '@vueuse/core';
+import { tap } from 'rxjs/internal/operators/tap';
+import { SpotifyService } from 'src/services/spotify.service';
+import { Ref, onMounted, ref } from 'vue';
+import GeneratorDialog from './GeneratorDialog.vue';
 
 // const spotify = SpotifyService;
 

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { useUrlSearchParams } from '@vueuse/core';
-import { SpotifyService } from '../services/spotify.service';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { SpotifyService } from '../services/spotify.service';
 
 const clientID = ref('id');
 const ss = SpotifyService;
