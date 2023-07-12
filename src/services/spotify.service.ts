@@ -305,7 +305,7 @@ class Spotify {
    * @param songs
    * @returns
    */
-  private shuffle(songs: SpotifyApi.PlaylistTrackObject[]) {
+  private shuffle(songs: SpotifyApi.TrackObjectFull[]) {
     const shuffledArray = songs.slice();
 
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -331,7 +331,7 @@ class Spotify {
   ): Observable<any> {
     console.log(options);
     const length = options.playlistSize ?? DEFAULT_SONG_LIMIT;
-    if (length > p.tracks.items.length) {
+    if (length > p.tracks.total) {
       return throwError(() => {
         return {
           title: 'Not enough tracks',
@@ -353,37 +353,45 @@ class Spotify {
       } (${p.external_urls.spotify}).`,
       public: false,
     };
-
-    // Gets the songs already used this session
-    const alreadyUsedSongs = this.sessionPlaylists.flatMap((p) =>
-      p.tracks.items.flatMap((t) => t.track?.id)
-    );
-
-    // Get the song selection
-    const filtered_songs = p.tracks.items.filter(
-      (song) => !alreadyUsedSongs.includes(song.track?.id)
-    );
-
-    // Throw an error if the playlists are too similar
-    if (filtered_songs.length < length) {
-      return throwError(() => {
-        return {
-          title: 'Playlists are too similar',
-          message: `Cannot generate ${length} uniqe songs that haven't already been generated this session.`,
-        };
-      });
-    }
-
-    const songSelection = this.shuffle(filtered_songs).slice(0, length);
-
     let startingObs = of(true);
 
     if (!this.me) {
       startingObs = this.fetchMe();
     }
 
+    let songSelection: SpotifyApi.TrackObjectFull[] = [];
+
     // Create a new playlist
     return startingObs.pipe(
+      mergeMap(() => this.fetchPlaylistTracks(p)),
+      tap((songs) => {
+        const similarityCheck = false;
+        let filtered_songs: SpotifyApi.TrackObjectFull[] = songs;
+        if (similarityCheck) {
+          //TODO - Actually make this work
+          // Gets the songs already used this session
+          const alreadyUsedSongs = this.sessionPlaylists.flatMap((p) =>
+            p.tracks.items.flatMap((t) => t.track?.id)
+          );
+
+          // Get the song selection
+          filtered_songs = songs.filter(
+            (song) => !alreadyUsedSongs.includes(song.id)
+          );
+
+          // Throw an error if the playlists are too similar
+          if (filtered_songs.length < length) {
+            return throwError(() => {
+              return {
+                title: 'Playlists are too similar',
+                message: `Cannot generate ${length} uniqe songs that haven't already been generated this session.`,
+              };
+            });
+          }
+        }
+
+        songSelection = this.shuffle(filtered_songs).slice(0, length);
+      }),
       mergeMap(() =>
         this.api(`users/${this.me!.id}/playlists`, {
           method: 'POST',
@@ -392,7 +400,7 @@ class Spotify {
           mergeMap((newPlaylist: SpotifyApi.PlaylistObjectFull) => {
             const tracksBody = {
               position: 0,
-              uris: songSelection.map((t) => t.track?.uri),
+              uris: songSelection.map((t) => t.uri),
             };
             // Add the songs to the new playlist
             return this.api(`playlists/${newPlaylist.id}/tracks`, {

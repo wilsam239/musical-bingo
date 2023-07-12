@@ -7,6 +7,7 @@ import { BingoService } from 'src/services/bingo.service';
 
 import { Ref, ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { SnackbarService } from 'src/services/snackbar.service';
 
 const props = defineProps<{ dialog_mode: TMode; playlist?: string }>();
 
@@ -72,8 +73,28 @@ function playlistSubmit() {
     stepper.value.next();
     mode.value = 'both';
   } else {
-    dialog.value?.hide();
-    console.log('Done! Now create playlist from link');
+    if (!url.value) {
+      console.error('No url, so no playlist can be created');
+      return;
+    }
+
+    const id = extractPlaylistId(url.value);
+
+    if (!id) {
+      console.error('Failed to get id from the playlist url', url.value);
+      return;
+    }
+
+    SpotifyService.fetchPlaylist(id, {
+      makeSubPlaylist: true,
+      playlistSize: songCount.value,
+    }).subscribe(() => {
+      SnackbarService.msgSuccess(
+        'Playlist Created!',
+        `Successfully created a playlist with ${songCount.value} songs`
+      );
+      dialog.value?.hide();
+    });
   }
 }
 
