@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core';
-import { tap } from 'rxjs/internal/operators/tap';
+import { tap, filter } from 'rxjs/operators';
 import { SpotifyService } from 'src/services/spotify.service';
 import { Ref, onMounted, ref } from 'vue';
 import GeneratorDialog from './GeneratorDialog.vue';
@@ -17,7 +17,7 @@ const openNewDialog: Ref<'playlist' | 'bingo' | 'both' | undefined> =
 
 const selectedPlaylist: Ref<string | undefined> = ref(undefined);
 
-const filter = useDebounceFn(() => {
+const filterFn = useDebounceFn(() => {
   console.log('Filtering with: ' + playlistFilter.value);
   if (!playlistFilter.value) {
     playlists.value = allPlaylists;
@@ -35,6 +35,16 @@ onMounted(() => {
         allPlaylists = playlistsFound;
         playlists.value = playlistsFound;
         spotify.loading = false;
+      })
+    )
+    .subscribe();
+
+  spotify.createdPlaylist
+    .pipe(
+      filter((p) => !!p),
+      tap((playlist) => {
+        allPlaylists.push(playlist!);
+        playlists.value = [playlist!, ...playlists.value];
       })
     )
     .subscribe();
@@ -60,7 +70,7 @@ function generateBingoSheets(playlist: SpotifyApi.PlaylistObjectSimplified) {
     outlined
     v-model="playlistFilter"
     label="Filter Playlists"
-    @update:model-value="filter"
+    @update:model-value="filterFn"
   />
   <q-list bordered class="rounded-borders">
     <q-item clickable v-ripple @click="createNewPlaylist()">
@@ -131,7 +141,7 @@ function generateBingoSheets(playlist: SpotifyApi.PlaylistObjectSimplified) {
                 </q-item> -->
                 <q-item clickable @click="createNewPlaylist(playlist)">
                   <q-item-section avatar>
-                    <q-icon name="pencil"></q-icon>
+                    <q-icon name="playlist_add"></q-icon>
                   </q-item-section>
                   <q-item-section>Create Subplaylist</q-item-section>
                 </q-item>

@@ -5,27 +5,37 @@ import PlaybackUpdater from './PlaybackUpdater.vue';
 
 const spotify = SpotifyService;
 
-let song:
-  | SpotifyApi.TrackObjectFull
-  | { name: string; artists: [{ name: string }] } = reactive({
-  name: 'NA',
-  artists: [{ name: 'NA' }],
-});
-
-const artists = ref('No Artist Information');
+const song: Ref<SpotifyApi.TrackObjectFull | undefined> = ref(undefined);
+const artists = ref('NA');
+const name = ref('NA');
+const albumImage = ref('');
+const progress = ref(0);
 
 function getCurrentSong() {
   spotify
     .fetchPlaybackState()
     .subscribe((resp: SpotifyApi.CurrentPlaybackResponse): void => {
-      if (resp && resp.item && resp.item.type == 'track') {
-        song = resp.item;
-        artists.value = song.artists.map((a) => a.name).join(', ');
+      if (
+        resp &&
+        resp.item &&
+        resp.item.type == 'track' &&
+        resp.item.id !== song.value?.id
+      ) {
+        progress.value = 0;
+        song.value = resp.item;
+        name.value = resp.item.name;
+        artists.value = resp.item.artists.map((a) => a.name).join(', ');
+        albumImage.value = resp.item.album.images.reduce((prev, cur) => {
+          return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;
+        }).url;
         spotify.addSongToPlayed(resp.item);
       }
     });
 }
 onMounted(() => {
+  setInterval(() => {
+    progress.value = progress.value + 30 / 1000;
+  }, 1000);
   getCurrentSong();
   setInterval(() => {
     getCurrentSong();
@@ -36,17 +46,34 @@ onMounted(() => {
 .now-playing-details {
   /* max-width: 300px; */
 }
+
+#now-playing-container {
+  width: 100%;
+}
+
+#current-album {
+  width: 50px;
+  height: 50px;
+}
+#timer-functions {
+  display: contents;
+}
+#timer {
+  width: 30%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
 </style>
 <template>
-  <div class="row justify-between">
-    <div class="row">
+  <div class="row justify-between q-pa-sm" id="now-playing-container">
+    <div class="row" id="song-info">
       <div class="column justify-center">
-        <q-avatar rounded class="q-mr-md" size="lg">
-          <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+        <q-avatar rounded class="q-mr-md" id="current-album">
+          <q-img :src="albumImage" />
         </q-avatar>
       </div>
       <!-- <marquee behavior="scroll" direction="left" scrollamount="2"> -->
-      <div class="column now-playing-details">
+      <div class="column now-playing-details justify-center">
         <div lines="1">
           <span class="text-weight-medium">{{ song?.name }}</span>
         </div>
@@ -55,6 +82,15 @@ onMounted(() => {
         </div>
       </div>
       <!-- </marquee> -->
+    </div>
+    <div id="timer-functions">
+      <q-linear-progress
+        :value="progress"
+        rounded
+        color="purple"
+        track-color="orange"
+        id="timer"
+      />
     </div>
     <div class="column justify-center">
       <q-btn size="lg" flat dense round icon="settings">

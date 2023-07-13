@@ -83,17 +83,25 @@ function playlistSubmit() {
       console.error('Failed to get id from the playlist url', url.value);
       return;
     }
-
-    SpotifyService.fetchPlaylist(id, {
-      makeSubPlaylist: true,
-      playlistSize: songCount.value,
-    }).subscribe(() => {
-      SnackbarService.msgSuccess(
-        'Playlist Created!',
-        `Successfully created a playlist with ${songCount.value} songs`
-      );
-      dialog.value?.hide();
-    });
+    SpotifyService.fetchPlaylist(id)
+      .pipe(
+        mergeMap((playlist) =>
+          SpotifyService.makeSubPlaylist(playlist, {
+            playlistSize: songCount.value,
+            subtitle: subtitle.value,
+            customName: name.value
+          })
+        ), tap(playlist => {
+          SpotifyService.createdPlaylist.next(playlist)
+        })
+      )
+      .subscribe(() => {
+        SnackbarService.msgSuccess(
+          'Playlist Created!',
+          `Successfully created a playlist with ${songCount.value} songs`
+        );
+        dialog.value?.hide();
+      });
   }
 }
 

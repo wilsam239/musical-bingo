@@ -62,6 +62,7 @@ function millisToMinutesAndSeconds(millis: number) {
         >
           <q-item-section avatar rounded class="q-mr-md">
             <q-img
+              class="rounded-borders"
               :src="
                 playlist.album.images.reduce((prev, cur) => {
                   return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;

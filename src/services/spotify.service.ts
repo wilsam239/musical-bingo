@@ -19,7 +19,6 @@ export interface TokenResponse {
   scope: string;
 }
 interface PlaylistOptions {
-  makeSubPlaylist?: boolean;
   playlistSize?: number;
   subtitle?: string;
   customName?: string;
@@ -62,6 +61,10 @@ class Spotify {
   storeSessionPlayed = new BehaviorSubject<PlayedSong[]>([]);
 
   loadingState = new BehaviorSubject(true);
+
+  readonly createdPlaylist = new BehaviorSubject<
+    SpotifyApi.PlaylistObjectFull | undefined
+  >(undefined);
 
   private actions: Set<string> = new Set();
   constructor() {
@@ -222,16 +225,27 @@ class Spotify {
    * @param id Id of the spotify playlist
    * @returns
    */
-  fetchPlaylist(
-    id: string,
-    options: PlaylistOptions = { playlistSize: DEFAULT_SONG_LIMIT }
-  ): Observable<SpotifyApi.PlaylistObjectFull> {
+  fetchPlaylist(id: string): Observable<SpotifyApi.PlaylistObjectFull> {
     return this.api(`playlists/${id}`).pipe(
-      mergeMap((playlist) => {
-        if (options?.makeSubPlaylist) {
-          return this.makeSubPlaylist(playlist, options);
-        } else {
-          return of(playlist);
+      tap((playlist) => {
+        const fixString = (inputString: string) => {
+          let fixedString = inputString;
+          let hasReplacements = true;
+
+          while (hasReplacements) {
+            const previousString = fixedString;
+            fixedString = fixedString
+              .replace(/&#x2F;/g, '/')
+              .replace(/&#x3A;/g, ':');
+
+            hasReplacements = fixedString !== previousString;
+          }
+
+          return fixedString;
+        };
+
+        if (playlist.description) {
+          playlist.description = fixString(playlist.description);
         }
       })
     );
@@ -328,8 +342,7 @@ class Spotify {
   makeSubPlaylist(
     p: SpotifyApi.PlaylistObjectFull,
     options: PlaylistOptions
-  ): Observable<any> {
-    console.log(options);
+  ): Observable<SpotifyApi.PlaylistObjectFull> {
     const length = options.playlistSize ?? DEFAULT_SONG_LIMIT;
     if (length > p.tracks.total) {
       return throwError(() => {
@@ -512,7 +525,13 @@ class Spotify {
         console.log('Token refreshed!');
         this.postLogin(response);
       }),
-      mergeMap(() => this.fetchMe())
+      mergeMap(() => this.fetchMe()),
+      catchError((e) => {
+        if (e.error_description == 'Refresh token revoked') {
+          this.refresh_token = '';
+        }
+        return of(e);
+      })
     );
   }
 

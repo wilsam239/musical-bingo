@@ -48,12 +48,57 @@ onMounted(() => {
   }
 });
 </script>
-<style>
-.playlist-image {
-  max-width: 200px;
-  min-width: 200px;
-  width: 200px;
+<style lang="scss">
+#playlist-description {
+  word-break: break-all;
 }
+
+body.screen--lg {
+  #playlist-title {
+    font-size: 3.5em;
+  }
+  .playlist-image {
+    width: 250px;
+    height: 250px;
+    min-width: 250px;
+    min-height: 250px;
+  }
+}
+body.screen--md {
+  #playlist-title {
+    font-size: 2.5em;
+  }
+  .playlist-image {
+    width: 200px;
+    height: 200px;
+    min-width: 200px;
+    min-height: 200px;
+  }
+}
+body.screen--sm {
+  #playlist-title {
+    font-size: 1.5em;
+  }
+  .playlist-image {
+    width: 150px;
+    height: 150px;
+    min-width: 150px;
+    min-height: 150px;
+  }
+}
+body.screen--xs {
+  #playlist-title {
+    font-size: 1em;
+  }
+  .playlist-image {
+    width: 100px;
+    height: 100px;
+    min-width: 100px;
+    min-height: 100px;
+  }
+}
+
+/* 
 #playlist-title {
   width: 75%;
 }
@@ -61,7 +106,7 @@ onMounted(() => {
 #playlist-title,
 #playlist-description {
   max-width: 75%;
-}
+} */
 </style>
 <template>
   <div class="column">
@@ -70,16 +115,18 @@ onMounted(() => {
       <q-btn color="secondary" icon="note_add" label="Generate Bingo Cards" />
     </div> -->
     <div class="row no-wrap q-ma-md">
-      <q-img
-        :src="
-          playlist?.images.reduce((prev, cur) => {
-            return (prev.width ?? 0) > (cur.width ?? 0) ? prev : cur;
-          }).url
-        "
-        class="playlist-image q-mr-md shadow-2 rounded-borders"
-      />
       <div class="column justify-center">
-        <div class="text-weight-bolder ellipsis text-h2" id="playlist-title">
+        <q-img
+          :src="
+            playlist?.images.reduce((prev, cur) => {
+              return (prev.width ?? 0) > (cur.width ?? 0) ? prev : cur;
+            }).url
+          "
+          class="playlist-image q-mr-md shadow-2 rounded-borders"
+        />
+      </div>
+      <div class="column justify-center">
+        <div class="text-weight-bolder" id="playlist-title">
           {{ playlist?.name }}
         </div>
         <div class="text-grey-8" id="playlist-description">
@@ -111,6 +158,31 @@ onMounted(() => {
         @click="openNewDialog = 'playlist'"
       >
         <q-tooltip> Make sub playlist </q-tooltip>
+      </q-btn>
+      <q-btn flat size="lg" round icon="more_horiz">
+        <!-- <q-tooltip>More Actions</q-tooltip> -->
+        <q-menu auto-close>
+          <q-list>
+            <q-item clickable @click="rename()">
+              <q-item-section avatar>
+                <q-icon name="edit"></q-icon>
+              </q-item-section>
+              <q-item-section>Rename Playlist</q-item-section>
+            </q-item>
+            <!-- <q-item clickable>
+                  <q-item-section avatar>
+                    <q-icon name="preview"></q-icon>
+                  </q-item-section>
+                  <q-item-section>View</q-item-section>
+                </q-item> -->
+            <q-item clickable @click="deletePlaylist()">
+              <q-item-section avatar>
+                <q-icon name="delete"></q-icon>
+              </q-item-section>
+              <q-item-section>Delete Subplaylist</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
       </q-btn>
     </div>
     <SongList :songs="tracks" :mini="false"></SongList>

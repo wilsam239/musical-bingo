@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR lFr">
+  <q-layout view="hHh LpR fFf">
     <q-header elevated class="bg-primary text-white">
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
@@ -33,9 +33,7 @@
 
     <q-footer elevated class="bg-grey-8 text-white">
       <q-toolbar>
-        <q-toolbar-title>
-          <now-playing></now-playing>
-        </q-toolbar-title>
+        <now-playing></now-playing>
       </q-toolbar>
     </q-footer>
 
