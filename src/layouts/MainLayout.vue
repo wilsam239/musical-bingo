@@ -31,7 +31,7 @@
       <router-view></router-view>
     </q-page-container>
 
-    <q-footer elevated class="bg-grey-8 text-white">
+    <q-footer elevated class="bg-grey-10 text-white">
       <q-toolbar>
         <now-playing></now-playing>
       </q-toolbar>

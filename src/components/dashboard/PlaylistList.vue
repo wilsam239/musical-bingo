@@ -71,7 +71,11 @@ function generateBingoSheets(playlist: SpotifyApi.PlaylistObjectSimplified) {
     v-model="playlistFilter"
     label="Filter Playlists"
     @update:model-value="filterFn"
-  />
+  >
+    <template v-slot:prepend>
+      <q-icon name="search" />
+    </template>
+  </q-input>
   <q-list bordered class="rounded-borders">
     <q-item clickable v-ripple @click="createNewPlaylist()">
       <q-item-section avatar>

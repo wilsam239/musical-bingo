@@ -53,6 +53,10 @@ onMounted(() => {
     v-model="songFilter"
     label="Filter Songs"
     @update:model-value="filter"
-  />
+  >
+    <template v-slot:prepend>
+      <q-icon name="search" />
+    </template>
+  </q-input>
   <song-list :songs="songs" :mini="true"></song-list>
 </template>

@@ -22,6 +22,7 @@ function fetchPlaylist(id: string) {
     .pipe(
       tap((pl) => {
         playlist.value = pl;
+        console.log('COLOUR: ' + (pl as any).primary_color);
       }),
       mergeMap((playlist) => {
         return spotify.fetchPlaylistTracks(playlist);
@@ -114,7 +115,7 @@ body.screen--xs {
       <q-btn round color="secondary" icon="chevron_left" to="/dashboard" />
       <q-btn color="secondary" icon="note_add" label="Generate Bingo Cards" />
     </div> -->
-    <div class="row no-wrap q-ma-md">
+    <div class="row no-wrap q-ma-md" id="playlist-header">
       <div class="column justify-center">
         <q-img
           :src="

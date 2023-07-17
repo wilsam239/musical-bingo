@@ -8,7 +8,6 @@ export function millisToMinutesAndSeconds(millis: number) {
 
 export function secondsToMinutesAndSeconds(_seconds: any) {
   const seconds = parseInt(_seconds, 10);
-  console.log('Converting ' + seconds + ' seconds to minutes');
   const minutes = Math.floor(seconds / 60);
 
   const fixedSeconds = seconds.toFixed(0);

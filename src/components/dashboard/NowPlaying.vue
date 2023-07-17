@@ -113,8 +113,7 @@ onMounted(() => {
           <q-linear-progress
             :value="progress"
             rounded
-            color="purple"
-            track-color="orange"
+            track-color="grey"
             id="timer"
           />
         </div>
@@ -124,6 +123,9 @@ onMounted(() => {
       </div>
     </div>
     <div class="row justify-end col-3">
+      <q-btn size="lg" flat dense round icon="format_list_numbered">
+        <q-menu> Song List here </q-menu>
+      </q-btn>
       <q-btn size="lg" flat dense round icon="settings">
         <q-menu>
           <playback-updater></playback-updater>
