@@ -134,6 +134,9 @@ function update(
             } else {
               return of(true);
             }
+          }),
+          switchMap(() => {
+            return SpotifyService.fetchPlaybackState()
           })
         )
       )
@@ -147,6 +150,7 @@ function update(
     });
 
   if (fromButton) {
+    SpotifyService.timer.next(playbackTimer.value)
     SnackbarService.msgSuccess('Playback Update', 'Settings changed.');
     running.value = true;
   }

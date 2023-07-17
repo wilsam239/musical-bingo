@@ -66,6 +66,12 @@ class Spotify {
     SpotifyApi.PlaylistObjectFull | undefined
   >(undefined);
 
+  readonly timer = new BehaviorSubject(0);
+  
+  readonly currentSong = new BehaviorSubject<
+    SpotifyApi.TrackObjectFull | undefined
+  >(undefined);
+
   private actions: Set<string> = new Set();
   constructor() {
     const autoRefresh = () => {
@@ -91,6 +97,12 @@ class Spotify {
     setInterval(() => {
       autoRefresh();
     }, this.minutesToMilliseconds(20));
+
+    setInterval(() => {
+      if (this.isLoggedIn) {
+        this.fetchPlaybackState().subscribe();
+      }
+    }, 5000);
   }
 
   minutesToMilliseconds(mins: number) {
@@ -284,8 +296,11 @@ class Spotify {
 
   fetchPlaybackState(): Observable<SpotifyApi.CurrentPlaybackResponse> {
     return this.api('me/player').pipe(
-      tap((state) => {
-        // console.log(state)
+      tap((resp) => {
+        if (resp && resp.item && resp.item.type == 'track') {
+          this.currentSong.next(resp.item);
+          // console.log(state)
+        }
       })
     );
   }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { SpotifyService } from 'src/services/spotify.service';
 import { Ref, defineComponent, mergeProps, onMounted, ref, watch } from 'vue';
+import { millisToMinutesAndSeconds } from 'src/helpers/timing.helper';
 
 const spotify = SpotifyService;
 
@@ -8,14 +9,6 @@ const props = defineProps<{
   songs: SpotifyApi.TrackObjectFull[];
   mini: boolean;
 }>();
-
-function millisToMinutesAndSeconds(millis: number) {
-  let minutes = Math.floor(millis / 60000);
-  let seconds = (millis % 60000) / 1000;
-
-  let fixedSeconds = seconds.toFixed(0);
-  return minutes + ':' + (seconds < 10 ? '0' : '') + fixedSeconds;
-}
 </script>
 <template>
   <div v-if="mini">
