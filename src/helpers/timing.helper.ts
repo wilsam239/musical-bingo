@@ -1,15 +1,28 @@
-export function millisToMinutesAndSeconds(millis: number) {
-  const minutes = Math.floor(millis / 60000);
-  const seconds = (millis % 60000) / 1000;
+export function millisToMinutesAndSeconds(milliseconds: number): string {
+  if (
+    typeof milliseconds !== 'number' ||
+    isNaN(milliseconds) ||
+    milliseconds < 0
+  ) {
+    throw new Error(
+      'Invalid input. Please provide a non-negative number of milliseconds.'
+    );
+  }
 
-  const fixedSeconds = seconds.toFixed(0);
-  return minutes + ':' + (seconds < 10 ? '0' : '') + fixedSeconds;
+  const seconds = Math.round(Math.floor(milliseconds / 1000));
+
+  return secondsToMinutesAndSeconds(seconds);
 }
 
-export function secondsToMinutesAndSeconds(_seconds: any) {
-  const seconds = parseInt(_seconds, 10);
-  const minutes = Math.floor(seconds / 60);
+export function secondsToMinutesAndSeconds(seconds: number) {
+  if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
+    throw new Error(
+      'Invalid input. Please provide a non-negative number of seconds.'
+    );
+  }
 
-  const fixedSeconds = seconds.toFixed(0);
-  return minutes + ':' + (seconds < 10 ? '0' : '') + fixedSeconds;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+
+  return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
 }

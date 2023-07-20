@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { SpotifyService } from '../services/spotify.service';
+import { tap } from 'rxjs';
 
 const clientID = ref('id');
 const ss = SpotifyService;
@@ -26,6 +27,16 @@ onMounted(() => {
       router.push('/dashboard');
     });
   } else {
+    if (ss.refresh_token) {
+      ss.refreshToken()
+        .pipe(
+          tap(() => {
+            router.push('/dashboard');
+            loading.value = false;
+          })
+        )
+        .subscribe();
+    }
     loading.value = false;
   }
 

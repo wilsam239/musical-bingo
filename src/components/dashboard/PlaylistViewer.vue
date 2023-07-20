@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router';
 import { SpotifyService } from '../../services/spotify.service';
 import GeneratorDialog from './GeneratorDialog.vue';
 import SongList from './SongList.vue';
+import { SnackbarService } from 'src/services/snackbar.service';
 
 const spotify = SpotifyService;
 const route = useRoute();
@@ -29,7 +30,6 @@ function fetchPlaylist(id: string) {
       }),
       tap((songs) => {
         tracks.value = songs;
-        console.log(songs);
         spotify.loading = false;
       })
     )
@@ -48,6 +48,12 @@ onMounted(() => {
     fetchPlaylist(route.params['id'] as string);
   }
 });
+
+function play() {
+  spotify.addToQueue(tracks.value[0]).subscribe(() => {
+    SnackbarService.msgSuccess('Success', 'Added to queue');
+  });
+}
 </script>
 <style lang="scss">
 #playlist-description {
@@ -141,6 +147,17 @@ body.screen--xs {
     </div>
     <div class="row q-mb-md q-ml-md q-mr-md">
       <q-btn
+        round
+        size="lg"
+        color="primary"
+        icon="play_arrow"
+        class="q-mr-lg"
+        @click="play()"
+      >
+        <q-tooltip> Play </q-tooltip>
+      </q-btn>
+      <q-btn
+        flat
         round
         size="lg"
         color="primary"

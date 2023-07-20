@@ -3,7 +3,11 @@ import { Ref, computed, defineComponent, onMounted, reactive, ref } from 'vue';
 import { SpotifyService } from '../../services/spotify.service';
 import PlaybackUpdater from './PlaybackUpdater.vue';
 import { filter, tap } from 'rxjs';
-import { secondsToMinutesAndSeconds } from 'src/helpers/timing.helper';
+import {
+  millisToMinutesAndSeconds,
+  secondsToMinutesAndSeconds,
+} from 'src/helpers/timing.helper';
+import SongQueue from './SongQueue.vue';
 
 const spotify = SpotifyService;
 
@@ -13,24 +17,33 @@ const name = ref('NA');
 const albumImage = ref('');
 
 const secondsElapsed = ref(0);
+const timer = ref(0);
+
 const timeElapsed = computed(() => {
   const result = secondsToMinutesAndSeconds(secondsElapsed.value);
 
-  if (secondsElapsed.value < timer.value) {
+  const valToCompare =
+    timer.value > 0
+      ? timer.value
+      : Math.floor((song.value?.duration_ms ?? 0) / 1000);
+  if (secondsElapsed.value < valToCompare) {
     return result;
   } else {
-    return secondsToMinutesAndSeconds(timer.value);
+    return secondsToMinutesAndSeconds(valToCompare);
   }
 });
-const timer = ref(0);
 
 const progress = computed(() => {
-  return secondsElapsed.value / timer.value;
+  const valToCompare =
+    timer.value > 0
+      ? timer.value
+      : Math.floor((song.value?.duration_ms ?? 0) / 1000);
+  return secondsElapsed.value / valToCompare;
 });
 
 onMounted(() => {
   setInterval(() => {
-    if (timer.value > 0) {
+    if (timer.value > 0 || song.value) {
       secondsElapsed.value = secondsElapsed.value + 1;
     }
   }, 1000);
@@ -46,18 +59,36 @@ onMounted(() => {
     )
     .subscribe();
 
-  spotify.currentSong
+  spotify.currentPlaybackState
     .pipe(
-      tap((curSong) => {
-        if (curSong && curSong.id !== song.value?.id) {
-          secondsElapsed.value = 0;
-          song.value = curSong;
-          name.value = curSong.name;
-          artists.value = curSong.artists.map((a) => a.name).join(', ');
-          albumImage.value = curSong.album.images.reduce((prev, cur) => {
-            return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;
-          }).url;
-          spotify.addSongToPlayed(curSong);
+      filter((curState) => !!curState),
+      tap((curState) => {
+        const updateValues = (
+          curSong: SpotifyApi.TrackObjectFull,
+          resetTimer = false
+        ) => {
+          if (curSong.id !== song.value?.id) {
+            if (resetTimer) {
+              secondsElapsed.value = 0;
+            }
+            song.value = curSong;
+            name.value = curSong.name;
+            artists.value = curSong.artists.map((a) => a.name).join(', ');
+            albumImage.value = curSong.album.images.reduce((prev, cur) => {
+              return (prev.width ?? 0) < (cur.width ?? 0) ? prev : cur;
+            }).url;
+            spotify.addSongToPlayed(curSong);
+          }
+        };
+        if (curState!.item && curState!.item.type == 'track') {
+          const curSong = curState!.item;
+          if (timer.value === 0) {
+            // No timer, so just show song progress
+            secondsElapsed.value = (curState!.progress_ms ?? 0) / 1000;
+            updateValues(curSong);
+          } else {
+            updateValues(curSong, true);
+          }
         }
       })
     )
@@ -118,13 +149,21 @@ onMounted(() => {
           />
         </div>
         <div class="column justify-center">
-          {{ secondsToMinutesAndSeconds(timer) }}
+          {{
+            timer > 0
+              ? secondsToMinutesAndSeconds(timer)
+              : song
+              ? millisToMinutesAndSeconds(song.duration_ms)
+              : '0:00'
+          }}
         </div>
       </div>
     </div>
     <div class="row justify-end col-3">
       <q-btn size="lg" flat dense round icon="format_list_numbered">
-        <q-menu> Song List here </q-menu>
+        <q-menu>
+          <song-queue></song-queue>
+        </q-menu>
       </q-btn>
       <q-btn size="lg" flat dense round icon="settings">
         <q-menu>

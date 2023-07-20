@@ -67,9 +67,9 @@ class Spotify {
   >(undefined);
 
   readonly timer = new BehaviorSubject(0);
-  
-  readonly currentSong = new BehaviorSubject<
-    SpotifyApi.TrackObjectFull | undefined
+
+  readonly currentPlaybackState = new BehaviorSubject<
+    SpotifyApi.CurrentPlaybackResponse | undefined
   >(undefined);
 
   private actions: Set<string> = new Set();
@@ -92,7 +92,7 @@ class Spotify {
         })
     );
 
-    autoRefresh();
+    // autoRefresh();
 
     setInterval(() => {
       autoRefresh();
@@ -298,7 +298,7 @@ class Spotify {
     return this.api('me/player').pipe(
       tap((resp) => {
         if (resp && resp.item && resp.item.type == 'track') {
-          this.currentSong.next(resp.item);
+          this.currentPlaybackState.next(resp);
           // console.log(state)
         }
       })
@@ -307,6 +307,14 @@ class Spotify {
 
   fetchQueue(): Observable<SpotifyApi.UsersQueueResponse> {
     return this.api('me/player/queue');
+  }
+
+  addToQueue(track: SpotifyApi.TrackObjectFull) {
+    const params = new URLSearchParams();
+    params.append('uri', track.uri);
+    return this.api(`me/player/queue?uri=${track.uri}`, {
+      method: 'POST',
+    });
   }
 
   scrubToSeconds(seconds: number) {
