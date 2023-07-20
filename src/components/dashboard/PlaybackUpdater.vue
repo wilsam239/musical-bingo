@@ -46,12 +46,11 @@
 <style></style>
 
 <script setup lang="ts">
-import { Meta } from 'quasar';
 import { Subscription, of, timer } from 'rxjs';
-import { delay, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
 import { SpotifyService } from 'src/services/spotify.service';
-import { defineComponent, PropType, ref, toRef } from 'vue';
+import { ref } from 'vue';
 
 const playbackTimer = ref(30);
 const scrubber = ref(0);
