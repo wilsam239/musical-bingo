@@ -161,12 +161,14 @@ onMounted(() => {
     </div>
     <div class="row justify-end col-3">
       <q-btn size="lg" flat dense round icon="format_list_numbered">
-        <q-menu>
+        <q-tooltip>Song Queue</q-tooltip>
+        <q-menu class="bg-grey-9">
           <song-queue></song-queue>
         </q-menu>
       </q-btn>
       <q-btn size="lg" flat dense round icon="settings">
-        <q-menu>
+        <q-tooltip>Update Playback Settings</q-tooltip>
+        <q-menu class="bg-grey-9">
           <playback-updater></playback-updater>
         </q-menu>
       </q-btn>
@@ -185,7 +187,8 @@ onMounted(() => {
         </div>
       </div>
       <q-btn size="lg" flat dense round icon="settings">
-        <q-menu>
+        <q-tooltip>Update Playback Settings</q-tooltip>
+        <q-menu class="bg-grey-9">
           <playback-updater></playback-updater>
         </q-menu>
       </q-btn>

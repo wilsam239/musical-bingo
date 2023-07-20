@@ -179,7 +179,7 @@ body.screen--xs {
       </q-btn>
       <q-btn flat size="lg" round icon="more_horiz">
         <!-- <q-tooltip>More Actions</q-tooltip> -->
-        <q-menu auto-close>
+        <q-menu auto-close class="bg-grey-9">
           <q-list>
             <q-item clickable @click="rename()">
               <q-item-section avatar>

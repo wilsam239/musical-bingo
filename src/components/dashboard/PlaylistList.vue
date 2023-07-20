@@ -129,7 +129,7 @@ function generateBingoSheets(playlist: SpotifyApi.PlaylistObjectSimplified) {
             icon="more_vert"
             v-on:click.prevent
           >
-            <q-menu auto-close>
+            <q-menu auto-close class="bg-grey-9">
               <q-list>
                 <q-item clickable @click="generateBingoSheets(playlist)">
                   <q-item-section avatar>

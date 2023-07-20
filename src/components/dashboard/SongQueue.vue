@@ -1,12 +1,12 @@
 <template>
   <div id="song-queue-container">
-    <!-- <q-inner-loading
+    <q-inner-loading
       :showing="loading"
       label="Loading..."
       label-class="text-teal"
       label-style="font-size: 2em"
       size="lg"
-    /> -->
+    />
 
     <song-list :songs="songs" :mini="true"></song-list>
   </div>
@@ -15,6 +15,7 @@
 #song-queue-container {
   width: 300px;
   max-height: 300px;
+  min-height: 300px;
 }
 </style>
 
