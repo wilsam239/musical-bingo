@@ -1,11 +1,13 @@
-export function millisToMinutesAndSeconds(milliseconds: number): string {
+export function millisToMinutesAndSeconds(_milliseconds: number): string {
+  const milliseconds = parseInt(_milliseconds as any, 10);
   if (
     typeof milliseconds !== 'number' ||
     isNaN(milliseconds) ||
     milliseconds < 0
   ) {
     throw new Error(
-      'Invalid input. Please provide a non-negative number of milliseconds.'
+      'Invalid input. Please provide a non-negative number of milliseconds. parsed value = ' +
+        milliseconds
     );
   }
 
@@ -14,10 +16,12 @@ export function millisToMinutesAndSeconds(milliseconds: number): string {
   return secondsToMinutesAndSeconds(seconds);
 }
 
-export function secondsToMinutesAndSeconds(seconds: number) {
+export function secondsToMinutesAndSeconds(_seconds: number) {
+  const seconds = parseInt(_seconds as any, 10);
   if (typeof seconds !== 'number' || isNaN(seconds) || seconds < 0) {
     throw new Error(
-      'Invalid input. Please provide a non-negative number of seconds.'
+      'Invalid input. Please provide a non-negative number of seconds. parsed value = ' +
+        seconds
     );
   }
 

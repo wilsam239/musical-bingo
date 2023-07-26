@@ -24,6 +24,10 @@ const filter = useDebounceFn(() => {
     );
 }, 300);
 
+function clearRecentlyPlayed() {
+  spotify.clearRecentlyPlayed();
+}
+
 watch(
   () => allSongs.value,
   (played) => {
@@ -49,13 +53,26 @@ onMounted(() => {
 <template>
   <q-input
     square
-    outlined
     v-model="songFilter"
     label="Filter Songs"
     @update:model-value="filter"
+    class="q-ml-md"
   >
     <template v-slot:prepend>
       <q-icon name="search" />
+    </template>
+
+    <template v-slot:after>
+      <q-btn
+        round
+        dense
+        flat
+        icon="clear"
+        @click="clearRecentlyPlayed()"
+        class="q-mr-md"
+      >
+        <q-tooltip>Clear Recently Played Songs</q-tooltip>
+      </q-btn>
     </template>
   </q-input>
   <song-list :songs="songs" :mini="true"></song-list>

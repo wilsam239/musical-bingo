@@ -3,13 +3,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { useQuasar } from 'quasar';
 import { APP_VERSION } from './assets/version';
 
 const version = APP_VERSION;
 
 console.log(`Running version: ${version}`);
-export default defineComponent({
-  name: 'App',
-});
+
+export default {
+  setup() {
+    const $q = useQuasar();
+
+    // calling here; equivalent to when component is created
+    $q.dark.set(true);
+  },
+};
 </script>

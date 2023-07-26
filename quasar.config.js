@@ -92,6 +92,7 @@ module.exports = configure(function (/* ctx */) {
         screen: {
           bodyClasses: true,
         },
+        dark: 'true',
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -105,7 +106,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify'],
+      plugins: ['Notify', 'Dark'],
     },
 
     // animations: 'all', // --- includes all animations

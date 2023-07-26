@@ -641,6 +641,12 @@ class Spotify {
     }
   }
 
+  clearRecentlyPlayed() {
+    this.storeSessionPlayed.next([]);
+    this.sessionPlayed = [];
+    window.sessionStorage.setItem('played', JSON.stringify(this.sessionPlayed));
+  }
+
   get loading() {
     return this.loadingState.getValue();
   }
