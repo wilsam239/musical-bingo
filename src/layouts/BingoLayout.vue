@@ -31,14 +31,15 @@ onMounted(() => {
       </p>
       <p>
         As usual we have prizes up for grabs in each round! 1st prize in each
-        round will receive a Welders Dog 4 Pack from the fridge, and second
-        place will receive a single Welders Dog Beer from the fridge. Limit is
-        one win per team per round, so you cannot win both 1st and 2nd prize in
-        the round.
+        round will receive 3 drink tickets, and second place will receive a
+        single drink ticket. Limit is one win per table per round, so you cannot
+        win both 1st and 2nd prize in the round. Drink tickets are redeemable at
+        your next Welders Dog game night, either trivia or bingo!
       </p>
       <p>
-        Bingo is played in teams, all you have to do is listen out for the songs
-        on your sheet, and as you hear them, mark them off. Once you have the
+        Bingo is played in teams (sometimes), all you have to do is listen out
+        for the songs on your sheet, and as you hear them, mark them off. Once
+        you have the
         <i>--insert bingo pattern here eg: 5 down, 5 across, or 5 diagonal--</i>
         sing out bingo and come and see us at the bar to verify your win!
       </p>
@@ -59,16 +60,8 @@ onMounted(() => {
       <ul>
         <li>Print all of the following sheets.</li>
         <li>
-          Keep track of songs played in one of the following ways: <br /><br />
-          You could write down the songs that are played everytime a new one
-          comes on.
-          <br /><br />
-          Or you could check the songs in the queue that remain, and if the
-          songs that the player has bingo for are not in the queue, then they
-          win
-          <br /><br />
-          Or you could just play the playlist in order from the top so you know
-          whats been played.
+          Using the bingo site that skips the songs, you can also keep track of
+          the songs played using the right hand menu
         </li>
       </ul>
     </div>
@@ -147,7 +140,7 @@ onMounted(() => {
           </svg>
         </div>
         <div class="flex-items title">MUSICAL BINGO</div>
-        <h2 v-if="bingo.subtitle">{{ bingo.subtitle }}</h2>
+        <div class="title" v-if="bingo.subtitle">{{ bingo.subtitle }}</div>
       </header>
       <BingoTable :index="i"></BingoTable>
       <footer>Page {{ i + 1 }}/{{ bingo.numberOfSheets }}</footer>

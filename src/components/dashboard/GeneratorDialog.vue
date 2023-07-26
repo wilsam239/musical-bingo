@@ -89,10 +89,11 @@ function playlistSubmit() {
           SpotifyService.makeSubPlaylist(playlist, {
             playlistSize: songCount.value,
             subtitle: subtitle.value,
-            customName: name.value
+            customName: name.value,
           })
-        ), tap(playlist => {
-          SpotifyService.createdPlaylist.next(playlist)
+        ),
+        tap((playlist) => {
+          SpotifyService.createdPlaylist.next(playlist);
         })
       )
       .subscribe(() => {
@@ -129,9 +130,10 @@ function bingoSubmit() {
         );
       })
     )
-    .subscribe();
-  dialog.value?.hide();
-  console.log('Done! Now create bingo cards from this playlist');
+    .subscribe(() => {
+      dialog.value?.hide();
+      console.log('Done! Now create bingo cards from this playlist');
+    });
 }
 
 function reset() {
