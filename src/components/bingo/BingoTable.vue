@@ -9,11 +9,14 @@ interface BingoTableProps {
 const props = defineProps<BingoTableProps>();
 </script>
 <template>
-  <div id="content">
-    <table id="bingotable">
+  <div class="content">
+    <table class="bingotable">
       <tr v-for="row in bs.fetchTable(index)" :key="JSON.stringify(row)">
         <th v-for="col in row" :key="col">
-          {{ col }}
+          <div class="cell-content column justify-center">
+            <template v-if="col.length <= 60">{{ col }}</template>
+            <template v-else>{{ col.substring(0, 60) }}...</template>
+          </div>
         </th>
       </tr>
     </table>
@@ -29,7 +32,7 @@ const props = defineProps<BingoTableProps>();
   font-size: 15pt;
 }
 
-#bingotable {
+.bingotable {
   margin: 0 auto;
   text-align: center;
   width: 400px;
@@ -53,5 +56,11 @@ td {
 
 .orange {
   background: #9b59b6;
+}
+
+.cell-content {
+  height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>
