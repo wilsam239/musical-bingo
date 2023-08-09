@@ -6,13 +6,13 @@
 
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
+            <img src="../assets/spotify-64.png" />
           </q-avatar>
-          Expires In {{ expiresIn }} Minutes
+          Musical Bingo
         </q-toolbar-title>
 
-        <q-btn dense flat round icon="logout" @click="spotify.logout()" />
-        <q-btn dense flat round icon="refresh" @click="refreshToken" />
+        <!-- <q-btn dense flat round icon="logout" @click="spotify.logout()" />
+        <q-btn dense flat round icon="refresh" @click="refreshToken" /> -->
         <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
       </q-toolbar>
     </q-header>

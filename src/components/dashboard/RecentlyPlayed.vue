@@ -53,24 +53,17 @@ onMounted(() => {
 <template>
   <q-input
     square
+    outlined
     v-model="songFilter"
     label="Filter Songs"
     @update:model-value="filter"
-    class="q-ml-md"
   >
     <template v-slot:prepend>
       <q-icon name="search" />
     </template>
 
-    <template v-slot:after>
-      <q-btn
-        round
-        dense
-        flat
-        icon="clear"
-        @click="clearRecentlyPlayed()"
-        class="q-mr-md"
-      >
+    <template v-slot:append>
+      <q-btn round dense flat icon="clear" @click="clearRecentlyPlayed()">
         <q-tooltip>Clear Recently Played Songs</q-tooltip>
       </q-btn>
     </template>
