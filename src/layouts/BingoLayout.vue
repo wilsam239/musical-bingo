@@ -206,8 +206,9 @@ footer {
   margin: 10mm auto;
   border: 1px #d3d3d3 solid;
   border-radius: 5px;
-  background: white;
+  background: white !important;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  color: black !important;
 }
 .subpage {
   padding: 1cm;
