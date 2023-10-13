@@ -308,6 +308,9 @@ class Spotify {
         if (resp && resp.item && resp.item.type == 'track') {
           this.currentPlaybackState.next(resp);
           // console.log(state)
+        } else {
+          this.currentPlaybackState.next(undefined);
+          this.currentTrackId.next('');
         }
       })
     );

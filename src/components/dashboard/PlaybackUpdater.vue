@@ -51,6 +51,7 @@
         spread
         no-caps
         rounded
+        class="bg-grey-9"
         :options="[
           {
             label: 'Bingo Mode',
