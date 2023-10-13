@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { mergeMap } from 'rxjs/internal/operators/mergeMap';
 import { tap } from 'rxjs/internal/operators/tap';
-import { Ref, onMounted, ref, watch } from 'vue';
+import { Ref, onMounted, ref, toRaw, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { SpotifyService } from '../../services/spotify.service';
 import GeneratorDialog from './GeneratorDialog.vue';
@@ -50,7 +50,11 @@ onMounted(() => {
 });
 
 function play() {
-  spotify.addToQueue(tracks.value[0]).subscribe(() => {
+  const forQueue = toRaw(tracks.value);
+  if (spotify.playbackMode.getValue() == 'trivia') {
+    forQueue.push(...toRaw(tracks.value));
+  }
+  spotify.addToQueue(...toRaw(tracks.value)).subscribe(() => {
     SnackbarService.msgSuccess('Success', 'Added to queue');
   });
 }
@@ -105,7 +109,7 @@ body.screen--xs {
   }
 }
 
-/* 
+/*
 #playlist-title {
   width: 75%;
 }

@@ -13,7 +13,8 @@
 
         <!-- <q-btn dense flat round icon="logout" @click="spotify.logout()" />
         <q-btn dense flat round icon="refresh" @click="refreshToken" /> -->
-        <q-btn dense flat round icon="menu" @click="toggleRightDrawer" />
+        <q-btn dense flat round icon="settings" @click="toggleSettingsDrawer" />
+        <q-btn dense flat round icon="menu" @click="toggleHistoryDrawer" />
       </q-toolbar>
     </q-header>
 
@@ -22,12 +23,17 @@
       <playlist-list></playlist-list>
     </q-drawer>
 
-    <q-drawer show-if-above v-model="rightDrawerOpen" side="right" bordered>
+    <q-drawer show-if-above v-model="historyDrawerOpen" side="right" bordered>
       <!-- drawer content -->
       <recently-played></recently-played>
     </q-drawer>
+    <q-drawer v-model="settingsDrawerOpen" side="right" bordered>
+      <!-- drawer content -->
+      <bingo-settings></bingo-settings>
+    </q-drawer>
 
     <q-page-container>
+      <playback-updater></playback-updater>
       <router-view></router-view>
     </q-page-container>
 
@@ -53,23 +59,34 @@ import NowPlaying from 'src/components/dashboard/NowPlaying.vue';
 import PlaybackUpdater from 'src/components/dashboard/PlaybackUpdater.vue';
 import PlaylistList from 'src/components/dashboard/PlaylistList.vue';
 import RecentlyPlayed from 'src/components/dashboard/RecentlyPlayed.vue';
+import BingoSettings from 'src/components/dashboard/BingoSettings.vue';
 import { SpotifyService } from 'src/services/spotify.service';
 import { onMounted, ref } from 'vue';
 
 const spotify = SpotifyService;
 const expiresIn = ref(0);
 const leftDrawerOpen = ref(false);
-const rightDrawerOpen = ref(false);
+const historyDrawerOpen = ref(false);
+const settingsDrawerOpen = ref(false);
 
 const loading = ref(false);
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
-function toggleRightDrawer() {
-  rightDrawerOpen.value = !rightDrawerOpen.value;
+function toggleHistoryDrawer() {
+  if (settingsDrawerOpen.value && !historyDrawerOpen.value) {
+    toggleSettingsDrawer();
+  }
+  historyDrawerOpen.value = !historyDrawerOpen.value;
 }
 
+function toggleSettingsDrawer() {
+  if (historyDrawerOpen.value && !settingsDrawerOpen.value) {
+    toggleHistoryDrawer();
+  }
+  settingsDrawerOpen.value = !settingsDrawerOpen.value;
+}
 function refreshToken() {
   spotify.refreshToken().subscribe();
 }

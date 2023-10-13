@@ -41,6 +41,9 @@ const progress = computed(() => {
   return secondsElapsed.value / valToCompare;
 });
 
+const allowAdvanced = ref(false);
+const bingoMode = ref(true);
+
 onMounted(() => {
   setInterval(() => {
     if (timer.value > 0 || song.value) {
@@ -48,9 +51,11 @@ onMounted(() => {
     }
   }, 1000);
 
+  spotify.advancedMode.pipe(tap((v) => (allowAdvanced.value = v))).subscribe();
+
   spotify.timer
     .pipe(
-      filter((t) => t > 0),
+      // filter((t) => t > 0),
       tap((t) => {
         console.log(`Setting timer to ${t}`);
         timer.value = t;
@@ -166,16 +171,16 @@ onMounted(() => {
           <song-queue></song-queue>
         </q-menu>
       </q-btn>
-      <q-btn size="lg" flat dense round icon="settings">
+      <!-- <q-btn size="lg" flat dense round icon="settings" v-if="allowAdvanced">
         <q-tooltip>Update Playback Settings</q-tooltip>
         <q-menu class="bg-grey-9">
           <playback-updater></playback-updater>
         </q-menu>
-      </q-btn>
+      </q-btn> -->
     </div>
   </div>
   <div class="lt-md column full-width">
-    <div class="row justify-between">
+    <div class="row">
       <div class="column justify-center">
         <q-avatar rounded class="q-ma-sm" id="current-album">
           <q-img :src="albumImage" />
@@ -185,13 +190,18 @@ onMounted(() => {
         <div lines="1">
           <span class="text-weight-medium">{{ song?.name }}</span>
         </div>
+        <div lines="1">
+          <span class="text-weight-medium">{{
+            song?.artists.map((a) => a.name).join(', ')
+          }}</span>
+        </div>
       </div>
-      <q-btn size="lg" flat dense round icon="settings">
+      <!-- <q-btn size="lg" flat dense round icon="settings" v-if="allowAdvanced">
         <q-tooltip>Update Playback Settings</q-tooltip>
         <q-menu class="bg-grey-9">
           <playback-updater></playback-updater>
         </q-menu>
-      </q-btn>
+      </q-btn> -->
     </div>
     <div class="row full-width">
       <q-linear-progress

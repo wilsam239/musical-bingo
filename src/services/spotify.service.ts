@@ -52,6 +52,9 @@ interface BingoSession {
   user?: SpotifyApi.UserObjectPrivate;
 }
 class Spotify {
+  readonly advancedMode = new BehaviorSubject(false);
+  readonly playbackMode = new BehaviorSubject('clear');
+
   private snack = SnackbarService;
   private url = 'https://api.spotify.com/v1/';
   private userSession: BingoSession;
@@ -72,7 +75,12 @@ class Spotify {
     SpotifyApi.CurrentPlaybackResponse | undefined
   >(undefined);
 
+  readonly currentTrackId = new BehaviorSubject<string>('');
+
   private actions: Set<string> = new Set();
+
+  readonly queue: SpotifyApi.TrackObjectFull[] = [];
+
   constructor() {
     const autoRefresh = () => {
       if (this.userSession.refresh_token) {
@@ -306,15 +314,21 @@ class Spotify {
   }
 
   fetchQueue(): Observable<SpotifyApi.UsersQueueResponse> {
+    if (this.queue.length > 0) {
+      return of({ queue: this.queue } as SpotifyApi.UsersQueueResponse);
+    }
     return this.api('me/player/queue');
   }
 
-  addToQueue(track: SpotifyApi.TrackObjectFull) {
-    const params = new URLSearchParams();
-    params.append('uri', track.uri);
-    return this.api(`me/player/queue?uri=${track.uri}`, {
-      method: 'POST',
-    });
+  addToQueue(...tracks: SpotifyApi.TrackObjectFull[]) {
+    // const params = new URLSearchParams();
+    // params.append('uri', track.uri);
+    this.queue.length = 0;
+    this.queue.push(...tracks);
+    return this.nextTrack();
+    // return this.api(`me/player/queue?uri=${track.uri}`, {
+    //   method: 'POST',
+    // });
   }
 
   scrubToSeconds(seconds: number) {
@@ -326,9 +340,27 @@ class Spotify {
   }
 
   nextTrack() {
-    return this.api('me/player/next', {
-      method: 'POST',
-    });
+    if (this.queue.length > 0) {
+      console.log(this.queue);
+      const body = {
+        uris: [this.queue[0].uri],
+      };
+      return this.api('me/player/play', {
+        method: 'PUT',
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).pipe(
+        tap(() => {
+          this.queue.shift();
+        })
+      );
+    } else {
+      return this.api('me/player/next', {
+        method: 'POST',
+      });
+    }
   }
 
   pause() {
@@ -625,6 +657,7 @@ class Spotify {
   }
 
   addSongToPlayed(song: SpotifyApi.TrackObjectFull) {
+    this.currentTrackId.next(song.id);
     const lastSong = this.sessionPlayed.at(0);
     const playedSong: PlayedSong = {
       song: song,

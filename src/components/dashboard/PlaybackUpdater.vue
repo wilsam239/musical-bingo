@@ -1,45 +1,74 @@
 <template>
-  <div class="playback-update-container">
-    <div class="spaced-inputs">
-      <q-input
-        square
-        outlined
-        v-model="playbackTimer"
-        label="Song Timer"
-        type="number"
-        min="0"
-        oninput="this.value = 
+  <div v-if="allowAdvanced">
+    <div class="playback-update-container">
+      <div class="spaced-inputs">
+        <q-input
+          square
+          outlined
+          v-model="playbackTimer"
+          label="Song Timer"
+          type="number"
+          min="0"
+          oninput="this.value =
  !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-      />
-      <q-input
-        square
-        outlined
-        v-model="scrubber"
-        label="Position In Song"
-        type="number"
-      />
-      <q-input
-        square
-        outlined
-        v-model="pauseTimer"
-        label="Time between songs"
-        type="number"
-        min="0"
-        oninput="this.value = 
+        />
+        <q-input
+          square
+          outlined
+          v-model="scrubber"
+          label="Position In Song"
+          type="number"
+        />
+        <q-input
+          square
+          outlined
+          v-model="pauseTimer"
+          label="Time between songs"
+          type="number"
+          min="0"
+          oninput="this.value =
  !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-      />
+        />
+      </div>
+      <div class="row justify-around q-mb-sm">
+        <q-btn
+          :disable="isDisabled()"
+          @click="update(scrubber, playbackTimer, pauseTimer, true)"
+          color="primary"
+        >
+          Update!
+        </q-btn>
+        <q-btn :disable="!running" @click="clear(true)" color="warning">
+          Clear!
+        </q-btn>
+      </div>
     </div>
-    <div class="row justify-around q-mb-sm">
-      <q-btn
-        :disable="isDisabled()"
-        @click="update(scrubber, playbackTimer, pauseTimer, true)"
-        color="primary"
-      >
-        Update!
-      </q-btn>
-      <q-btn :disable="!running" @click="clear(true)" color="warning">
-        Clear!
-      </q-btn>
+  </div>
+  <div v-else>
+    <div class="q-ma-sm">
+      <q-btn-toggle
+        v-model="mode"
+        spread
+        no-caps
+        rounded
+        :options="[
+          {
+            label: 'Bingo Mode',
+            value: 'bingo',
+            icon: mode == 'trivia' ? 'stop' : 'play_arrow',
+          },
+          {
+            label: 'Trivia Mode',
+            value: 'trivia',
+            icon: mode == 'bingo' ? 'stop' : 'play_arrow',
+          },
+          {
+            label: 'Clear Timer',
+            value: 'clear',
+            icon: 'cancel',
+          },
+        ]"
+      ></q-btn-toggle>
     </div>
   </div>
 </template>
@@ -47,11 +76,13 @@
 
 <script setup lang="ts">
 import { Subscription, of, timer } from 'rxjs';
-import { delay, map, switchMap } from 'rxjs/operators';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
 import { SpotifyService } from 'src/services/spotify.service';
-import { ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
+const allowAdvanced = ref(false);
+const mode = ref('');
 const playbackTimer = ref(30);
 const scrubber = ref(0);
 const pauseTimer = ref(0);
@@ -75,6 +106,7 @@ function pause(pauseVal: number) {
 }
 
 function clear(fromButton = false) {
+  console.log('clearing');
   if (!!playbackSub) {
     playbackSub.unsubscribe();
   }
@@ -85,6 +117,7 @@ function clear(fromButton = false) {
     scrubber.value = 0;
     pauseTimer.value = 0;
     running.value = false;
+    SpotifyService.timer.next(0);
   }
 }
 function update(
@@ -135,7 +168,7 @@ function update(
             }
           }),
           switchMap(() => {
-            return SpotifyService.fetchPlaybackState()
+            return SpotifyService.fetchPlaybackState();
           })
         )
       )
@@ -149,9 +182,32 @@ function update(
     });
 
   if (fromButton) {
-    SpotifyService.timer.next(playbackTimer.value)
+    SpotifyService.timer.next(playbackTimer.value);
     SnackbarService.msgSuccess('Playback Update', 'Settings changed.');
     running.value = true;
   }
 }
+
+watch(mode, (m) => {
+  SpotifyService.playbackMode.next(m);
+  if (m !== 'clear') {
+    if (m == 'trivia') {
+      playbackTimer.value = 20;
+      pauseTimer.value = 1;
+      scrubber.value = 0;
+    } else if (m == 'bingo') {
+      playbackTimer.value = 30;
+      pauseTimer.value = 0;
+      scrubber.value = 0;
+    }
+    update(scrubber.value, playbackTimer.value, pauseTimer.value, true);
+  } else {
+    clear(true);
+  }
+});
+onMounted(() => {
+  SpotifyService.advancedMode
+    .pipe(tap((v) => (allowAdvanced.value = v)))
+    .subscribe();
+});
 </script>
