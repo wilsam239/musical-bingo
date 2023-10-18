@@ -209,20 +209,22 @@ watch(mode, (m) => {
 });
 
 const noSleep = new NoSleep();
-document.addEventListener(
-  'click',
-  function enableLock() {
-    if (!noSleep.isEnabled) {
-      noSleep.enable();
-      console.log('Should not turn off display now');
-      SnackbarService.msgInfo(
-        'No Sleep Enabled',
-        "Hope it doesn't get tired..."
-      );
-    }
-  },
-  false
-);
+['click', 'touch'].forEach((action) => {
+  document.addEventListener(
+    action,
+    function enableLock() {
+      if (!noSleep.isEnabled) {
+        noSleep.enable();
+        console.log('Should not turn off display now');
+        SnackbarService.msgInfo(
+          `No Sleep Enabled By ${action}`,
+          "Hope it doesn't get tired..."
+        );
+      }
+    },
+    false
+  );
+});
 
 onMounted(() => {
   SpotifyService.advancedMode
