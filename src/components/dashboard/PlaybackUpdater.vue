@@ -48,7 +48,6 @@
     <div class="q-ma-sm">
       <q-btn-toggle
         v-model="mode"
-        :click="enableLock()"
         spread
         no-caps
         rounded
@@ -210,12 +209,20 @@ watch(mode, (m) => {
 });
 
 const noSleep = new NoSleep();
-function enableLock() {
-  if (!noSleep.isEnabled) {
-    noSleep.enable();
-    console.log('Should not turn off display now');
-  }
-}
+document.addEventListener(
+  'click',
+  function enableLock() {
+    if (!noSleep.isEnabled) {
+      noSleep.enable();
+      console.log('Should not turn off display now');
+      SnackbarService.msgInfo(
+        'No Sleep Enabled',
+        "Hope it doesn't get tired..."
+      );
+    }
+  },
+  false
+);
 
 onMounted(() => {
   SpotifyService.advancedMode
