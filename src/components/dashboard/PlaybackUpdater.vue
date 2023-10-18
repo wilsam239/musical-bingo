@@ -48,6 +48,7 @@
     <div class="q-ma-sm">
       <q-btn-toggle
         v-model="mode"
+        :click="enableLock()"
         spread
         no-caps
         rounded
@@ -76,6 +77,7 @@
 <style></style>
 
 <script setup lang="ts">
+import NoSleep from '@uriopass/nosleep.js';
 import { Subscription, of, timer } from 'rxjs';
 import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
@@ -206,6 +208,15 @@ watch(mode, (m) => {
     clear(true);
   }
 });
+
+const noSleep = new NoSleep();
+function enableLock() {
+  if (!noSleep.isEnabled) {
+    noSleep.enable();
+    console.log('Should not turn off display now');
+  }
+}
+
 onMounted(() => {
   SpotifyService.advancedMode
     .pipe(tap((v) => (allowAdvanced.value = v)))
