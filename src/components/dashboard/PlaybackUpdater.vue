@@ -76,7 +76,6 @@
 <style></style>
 
 <script setup lang="ts">
-import NoSleep from '@uriopass/nosleep.js';
 import { Subscription, of, timer } from 'rxjs';
 import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
@@ -208,25 +207,18 @@ watch(mode, (m) => {
   }
 });
 
-const noSleep = new NoSleep();
-['click', 'touch'].forEach((action) => {
-  document.addEventListener(
-    action,
-    function enableLock() {
-      if (!noSleep.isEnabled) {
-        noSleep.enable();
-        console.log('Should not turn off display now');
-        SnackbarService.msgInfo(
-          `No Sleep Enabled By ${action}`,
-          "Hope it doesn't get tired..."
-        );
-      }
-    },
-    false
-  );
-});
+const wakeLock = ref<any>(null);
 
+const requestWakeLock = async () => {
+  wakeLock.value = await navigator.wakeLock.request('screen');
+  SnackbarService.msgInfo('Wake Lock enabled', '');
+};
 onMounted(() => {
+  if ('wakeLock' in navigator) {
+    requestWakeLock();
+  } else {
+    SnackbarService.msgError('Cannot Wake Lock', 'RIP');
+  }
   SpotifyService.advancedMode
     .pipe(tap((v) => (allowAdvanced.value = v)))
     .subscribe();
