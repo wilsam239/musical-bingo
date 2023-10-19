@@ -72,6 +72,23 @@
       ></q-btn-toggle>
     </div>
   </div>
+  <q-dialog v-model="browserWarn">
+    <q-card>
+      <q-card-section>
+        <div class="text-h6">Incompatible Browser</div>
+      </q-card-section>
+
+      <q-card-section class="q-pt-none">
+        Unfortunately, this browser is not supported. In order to use the app
+        you will need to ensure the display remains on in settings, or use
+        Chrome.
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="OK" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 <style></style>
 
@@ -214,40 +231,15 @@ const requestWakeLock = async () => {
   SnackbarService.msgInfo('Wake Lock enabled', '');
 };
 
-var interval: NodeJS.Timeout | undefined = undefined;
-function preventScreenSleep() {
-  // Use a small invisible element (e.g., a 1x1 pixel div) to simulate user activity
-  const invisibleElement = document.createElement('div');
-  invisibleElement.style.width = '1px';
-  invisibleElement.style.height = '1px';
-  invisibleElement.style.position = 'absolute';
-  invisibleElement.style.top = '-1000px';
-
-  // Append the element to the body
-  document.body.appendChild(invisibleElement);
-
-  // Trigger a click event on the invisible element every 30 seconds
-  interval = setInterval(() => {
-    const event = new MouseEvent('click');
-    invisibleElement.dispatchEvent(event);
-  }, 15000); // 15 seconds (adjust as needed)
-}
-
+const browserWarn = ref(false);
 onMounted(() => {
   if ('wakeLock' in navigator) {
     requestWakeLock();
   } else {
-    SnackbarService.msgInfo('Wake Lock', 'Using Click Method');
-    preventScreenSleep();
+    browserWarn.value = screen.width <= 760;
   }
   SpotifyService.advancedMode
     .pipe(tap((v) => (allowAdvanced.value = v)))
     .subscribe();
-});
-
-onUnmounted(() => {
-  if (interval) {
-    clearInterval(interval);
-  }
 });
 </script>
