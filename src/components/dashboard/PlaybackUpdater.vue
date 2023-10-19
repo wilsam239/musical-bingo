@@ -236,7 +236,10 @@ onMounted(() => {
   if ('wakeLock' in navigator) {
     requestWakeLock();
   } else {
-    browserWarn.value = screen.width <= 760;
+    browserWarn.value =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        window.navigator.userAgent
+      ) && !window.navigator.userAgent.includes('Chrome');
   }
   SpotifyService.advancedMode
     .pipe(tap((v) => (allowAdvanced.value = v)))
