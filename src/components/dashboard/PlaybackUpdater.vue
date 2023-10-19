@@ -80,7 +80,7 @@ import { Subscription, of, timer } from 'rxjs';
 import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { SnackbarService } from 'src/services/snackbar.service';
 import { SpotifyService } from 'src/services/spotify.service';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 
 const allowAdvanced = ref(false);
 const mode = ref('');
@@ -213,14 +213,41 @@ const requestWakeLock = async () => {
   wakeLock.value = await navigator.wakeLock.request('screen');
   SnackbarService.msgInfo('Wake Lock enabled', '');
 };
+
+var interval: NodeJS.Timeout | undefined = undefined;
+function preventScreenSleep() {
+  // Use a small invisible element (e.g., a 1x1 pixel div) to simulate user activity
+  const invisibleElement = document.createElement('div');
+  invisibleElement.style.width = '1px';
+  invisibleElement.style.height = '1px';
+  invisibleElement.style.position = 'absolute';
+  invisibleElement.style.top = '-1000px';
+
+  // Append the element to the body
+  document.body.appendChild(invisibleElement);
+
+  // Trigger a click event on the invisible element every 30 seconds
+  interval = setInterval(() => {
+    const event = new MouseEvent('click');
+    invisibleElement.dispatchEvent(event);
+  }, 15000); // 15 seconds (adjust as needed)
+}
+
 onMounted(() => {
   if ('wakeLock' in navigator) {
     requestWakeLock();
   } else {
-    SnackbarService.msgError('Cannot Wake Lock', 'RIP');
+    SnackbarService.msgInfo('Wake Lock', 'Using Click Method');
+    preventScreenSleep();
   }
   SpotifyService.advancedMode
     .pipe(tap((v) => (allowAdvanced.value = v)))
     .subscribe();
+});
+
+onUnmounted(() => {
+  if (interval) {
+    clearInterval(interval);
+  }
 });
 </script>
