@@ -19,6 +19,8 @@ const albumImage = ref('');
 const secondsElapsed = ref(0);
 const timer = ref(0);
 
+let isPlaying = false;
+
 const timeElapsed = computed(() => {
   const result = secondsToMinutesAndSeconds(secondsElapsed.value);
 
@@ -46,7 +48,7 @@ const bingoMode = ref(true);
 
 onMounted(() => {
   setInterval(() => {
-    if (timer.value > 0 || song.value) {
+    if ((timer.value > 0 || song.value) && isPlaying) {
       secondsElapsed.value = secondsElapsed.value + 1;
     }
   }, 1000);
@@ -95,6 +97,8 @@ onMounted(() => {
             updateValues(curSong, true);
           }
         }
+
+        isPlaying = curState?.is_playing ?? false;
       })
     )
     .subscribe();

@@ -22,6 +22,18 @@ onMounted(() => {
     )
     .subscribe();
 });
+function play(index: number) {
+  if (props.mini) {
+    return;
+  } else {
+    spotify
+      .addToQueue(...props.songs.slice(index, props.songs.length))
+      .subscribe(() => {
+        const id = props.songs[index].id;
+        currentId.value = id;
+      });
+  }
+}
 </script>
 <style lang="scss">
 .now-playing {
@@ -78,6 +90,8 @@ onMounted(() => {
     <div>
       <q-list>
         <q-item
+          clickable
+          v-on:click="play(index)"
           v-for="(song, index) of songs"
           v-bind:key="song.id + '_' + index"
           v-bind:class="song.id == currentId ? 'now-playing' : ''"
