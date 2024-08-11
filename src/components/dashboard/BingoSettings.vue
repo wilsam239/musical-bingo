@@ -18,5 +18,4 @@ watch(advancedMode, (val) => {
 <template>
   <h3>Settings</h3>
   <q-toggle v-model="advancedMode" label="Advanced Mode"></q-toggle>
-  <div>Setting here</div>
 </template>
