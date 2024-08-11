@@ -11,8 +11,8 @@
           Musical Bingo
         </q-toolbar-title>
 
-        <!-- <q-btn dense flat round icon="logout" @click="spotify.logout()" />
-        <q-btn dense flat round icon="refresh" @click="refreshToken" /> -->
+        <q-btn dense flat round icon="logout" @click="confirmLogout = true" />
+        <!-- q-btn dense flat round icon="refresh" @click="refreshToken" /> -->
         <q-btn dense flat round icon="settings" @click="toggleSettingsDrawer" />
         <q-btn dense flat round icon="menu" @click="toggleHistoryDrawer" />
       </q-toolbar>
@@ -51,6 +51,22 @@
       size="lg"
     />
   </q-layout>
+
+  <q-dialog v-model="confirmLogout">
+    <q-card>
+      <q-card-section class="row items-center">
+        <q-avatar icon="logout" color="primary" text-color="white" />
+        <span class="q-ml-sm"
+          >Logging out will require you to log back in to continue use.</span
+        >
+      </q-card-section>
+
+      <q-card-actions align="right">
+        <q-btn flat label="Cancel" color="warn" v-close-popup />
+        <q-btn flat label="Logout" color="primary" @click="logout()" />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup lang="ts">
@@ -62,6 +78,7 @@ import RecentlyPlayed from 'src/components/dashboard/RecentlyPlayed.vue';
 import BingoSettings from 'src/components/dashboard/BingoSettings.vue';
 import { SpotifyService } from 'src/services/spotify.service';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const spotify = SpotifyService;
 const expiresIn = ref(0);
@@ -70,6 +87,9 @@ const historyDrawerOpen = ref(false);
 const settingsDrawerOpen = ref(false);
 
 const loading = ref(false);
+
+const confirmLogout = ref(false);
+const router = useRouter();
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
@@ -103,4 +123,9 @@ onMounted(() => {
     expiresIn.value = Math.round((spotify.expiry - Date.now()) / 1000 / 60);
   }, 5000);
 });
+
+function logout() {
+  spotify.logout();
+  window.location.reload();
+}
 </script>

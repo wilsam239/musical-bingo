@@ -555,10 +555,7 @@ class Spotify {
   }
 
   logout() {
-    this.userSession.access_token = undefined;
-    this.userSession.refresh_token = undefined;
-    this.userSession.expiry = undefined;
-    this.userSession.user = undefined;
+    this.clearSession();
   }
 
   refreshToken() {
