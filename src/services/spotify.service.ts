@@ -338,8 +338,6 @@ class Spotify {
     return this.api(`me/player/seek?position_ms=${seconds * 1000}`, {
       method: 'PUT',
     });
-    // TODO Implement this
-    return of(true);
   }
 
   nextTrack() {
@@ -543,7 +541,7 @@ class Spotify {
       }),
       catchError((err) => {
         if (err) {
-          console.error(err);
+          console.error(`Error using api request to ${url}`, err);
           this.snack.msgError('API Error', err.message);
         }
         if (!err) {

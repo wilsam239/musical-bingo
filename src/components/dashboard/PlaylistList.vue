@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDebounceFn } from '@vueuse/core';
-import { tap, filter } from 'rxjs/operators';
+import { tap, filter, map } from 'rxjs/operators';
 import { SpotifyService } from 'src/services/spotify.service';
 import { Ref, onMounted, ref } from 'vue';
 import GeneratorDialog from './GeneratorDialog.vue';
@@ -31,6 +31,7 @@ onMounted(() => {
   spotify
     .fetchPlaylists()
     .pipe(
+      map((r) => r.filter((p) => p !== null)),
       tap((playlistsFound) => {
         allPlaylists = playlistsFound;
         playlists.value = playlistsFound;
