@@ -532,7 +532,15 @@ class Spotify {
           }),
           map((body) => {
             if (body.length > 0) {
-              return JSON.parse(body);
+              try {
+                return JSON.parse(body);
+              } catch (e) {
+                console.info(
+                  `Caught error trying to parse response: ${body}`,
+                  e
+                );
+                return body;
+              }
             } else {
               return { items: [] };
             }
